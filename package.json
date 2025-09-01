@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "dotenv-cli": "^10.0.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

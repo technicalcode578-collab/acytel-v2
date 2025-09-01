@@ -1,0 +1,50 @@
+# Docker Compose configuration for Acytel Project - Core Services
+version: '3.8'
+
+services:
+  # ScyllaDB: A high-performance NoSQL database compatible with Cassandra.
+  scylla-db:
+    image: scylladb/scylla
+    container_name: acytel-scylla-db
+    command: --smp 1 --memory 750M --overprovisioned 1
+    volumes:
+      - scylla_data:/var/lib/scylla
+    ports:
+      - "9042:9042"
+
+  # Typesense: A fast, open-source search engine.
+  typesense:
+    image: typesense/typesense:0.25.2
+    container_name: acytel-typesense
+    environment:
+      - TYPESENSE_API_KEY=Acytel-Secret-Key-Dev-Only
+      - TYPESENSE_DATA_DIR=/data
+    volumes:
+      - typesense_data:/data
+    ports:
+      - "8108:8108"
+    # This new block tells Docker to wait until Typesense is healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8108/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MinIO: An S3-compatible object storage service.
+  minio:
+    image: minio/minio
+    container_name: acytel-minio
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+volumes:
+  scylla_data:
+  typesense_data:
+  minio_data:
