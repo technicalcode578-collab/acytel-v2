@@ -23,12 +23,12 @@ export async function searchTracks(query: string): Promise<any[]> {
     return response.data.hits || [];
 }
 
-// This new function gets the secure URL and then fetches the audio as an ArrayBuffer
-export async function fetchTrackAsArrayBuffer(trackId: string): Promise<ArrayBuffer> {
+// REFACTORED FUNCTION: Fetches the audio as a ReadableStream
+export async function fetchTrackAsStream(trackId: string): Promise<ReadableStream<Uint8Array>> {
     const secureUrl = await getSecureTrackUrl(trackId);
     const response = await fetch(secureUrl);
-    if (!response.ok) {
-        throw new Error(`Failed to fetch audio file: ${response.statusText}`);
+    if (!response.ok || !response.body) {
+        throw new Error(`Failed to fetch audio stream: ${response.statusText}`);
     }
-    return response.arrayBuffer();
+    return response.body;
 }
