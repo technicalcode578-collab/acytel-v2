@@ -1,7 +1,8 @@
 import { createSignal } from "solid-js";
 import { Track } from "../models/track";
 import * as AudioService from "../services/audio.service";
-import { fetchTrackAsStream } from "../services/track.service";
+import { getSecureTrackUrl } from "../services/track.service";
+import init from "../audio-engine/pkg/audio_engine.js";
 
 const [currentTrack, setCurrentTrack] = createSignal<Track | null>(null);
 const [isPlaying, setIsPlaying] = createSignal(false);
@@ -16,9 +17,8 @@ const startProgressTracker = () => {
     progressInterval = window.setInterval(() => {
         const time = AudioService.getCurrentTime();
         setCurrentTime(time);
-
-        if (!isPlaying() || (time >= duration() && duration() > 0)) {
-            setIsPlaying(false);
+        
+        if (!isPlaying()) {
             clearInterval(progressInterval);
         }
     }, 250);
@@ -30,9 +30,18 @@ export const playerActions = {
         setCurrentTrack(track);
         try {
             await AudioService.initAudioContext();
-            const stream = await fetchTrackAsStream(track.id);
-            await AudioService.play(stream);
-            // Duration and progress are now handled by the audio service callbacks and tracker
+            
+            const secureUrl = await getSecureTrackUrl(track.id);
+            const response = await fetch(secureUrl);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch audio data: ${response.statusText}`);
+            }
+            const audioData = await response.arrayBuffer();
+
+            await init();
+
+            await AudioService.play(new Uint8Array(audioData));
+
         } catch (error) {
             console.error("Error playing track:", error);
             setIsPlaying(false);
@@ -40,7 +49,7 @@ export const playerActions = {
             setIsLoading(false);
         }
     },
-
+    
     togglePlayPause: () => {
         if (isPlaying()) {
             AudioService.pause();
@@ -53,8 +62,7 @@ export const playerActions = {
         AudioService.seek(time);
         setCurrentTime(time);
     },
-
-    // Actions for the audio service to call back into the store
+    
     setPlaying: (playing: boolean) => {
         setIsPlaying(playing);
         if(playing) {

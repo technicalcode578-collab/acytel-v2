@@ -1,0 +1,21 @@
+[package]
+name = "audio-engine"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+# The bridge between Rust/WASM and JavaScript
+wasm-bindgen = "0.2"
+
+# A powerful, pure-Rust audio decoding library
+symphonia = { version = "0.5.3", features = ["all-codecs", "all-formats"] }
+
+# Provides better panic messages in the browser console
+console_error_panic_hook = "0.1.7"
+
+# Provides bindings to JavaScript system types like Float32Array
+js-sys = "0.3"
+

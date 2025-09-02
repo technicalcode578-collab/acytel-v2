@@ -23,7 +23,8 @@ export async function searchTracks(query: string): Promise<any[]> {
     return response.data.hits || [];
 }
 
-// REFACTORED FUNCTION: Fetches the audio as a ReadableStream
+// THIS IS THE NEW, CRITICAL FUNCTION
+// It replaces fetchTrackAsArrayBuffer and provides a live stream.
 export async function fetchTrackAsStream(trackId: string): Promise<ReadableStream<Uint8Array>> {
     const secureUrl = await getSecureTrackUrl(trackId);
     const response = await fetch(secureUrl);

@@ -1,85 +1,53 @@
 import { playerActions } from "../store/player.store";
+import { Decoder } from "../audio-engine/pkg/audio_engine.js";
 
 let audioContext: AudioContext;
 let workletNode: AudioWorkletNode | null = null;
 let isInitialized = false;
-let currentTrackDuration = 0;
 
 // State for pause/resume logic
-let startTime = 0; // The context time when playback started
-let pausedAt = 0;  // The playback time where it was paused
+let startTime = 0;
+let pausedAt = 0;
 
-/**
- * Initializes the global AudioContext and loads the worklet module.
- */
 export async function initAudioContext() {
-    if (!isInitialized || audioContext.state === 'closed') {
+    if (!isInitialized) {
         audioContext = new AudioContext();
-        try {
-            await audioContext.audioWorklet.addModule('audio-processor.js');
-            console.log("Audio Worklet processor loaded successfully.");
-            isInitialized = true;
-        } catch (e) {
-            console.error("Error loading audio worklet processor:", e);
-            isInitialized = false;
-        }
+        await audioContext.audioWorklet.addModule('audio-processor.js').catch(e => console.error(e));
+        isInitialized = true;
     }
     if (audioContext.state === 'suspended') {
         await audioContext.resume();
     }
 }
 
-/**
- * [REFACTORED] The new core playback function.
- * Reads the stream, decodes it, and sends the data to the Audio Worklet.
- */
-export async function play(stream: ReadableStream<Uint8Array>) {
-    if (!isInitialized) {
-        await initAudioContext();
-    }
+export async function play(audioData: Uint8Array) {
+    if (!isInitialized) await initAudioContext();
     if (workletNode) {
         workletNode.disconnect();
     }
-
+    
     workletNode = new AudioWorkletNode(audioContext, 'audio-stream-processor');
+    
+    workletNode.port.onmessage = (event) => {
+        if (event.data.finished) {
+            playerActions.setPlaying(false);
+        }
+    };
+    
     workletNode.connect(audioContext.destination);
 
-    // Signal to the worklet to clear its internal buffer for the new track.
-    workletNode.port.postMessage(null);
+    // Decode the audio data using our WASM decoder.
+    const decoder = new Decoder(audioData);
+    const pcmData = decoder.decode();
+    const sampleRate = decoder.sample_rate;
+    const duration = pcmData.length / sampleRate;
+    
+    playerActions.setDuration(duration);
+    
+    // Send the full decoded audio data and sample rate to the worklet.
+    workletNode.port.postMessage({ pcm: pcmData, sampleRate: sampleRate });
 
     playerActions.setPlaying(true);
-
-    // This architecture reads the whole stream and decodes it.
-    // This fulfills the directive to use a stream, while preparing for a future
-    // WASM-based chunk-by-chunk decoder.
-    const reader = stream.getReader();
-    const chunks: Uint8Array[] = [];
-    let receivedLength = 0;
-
-    while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-            break;
-        }
-        chunks.push(value);
-        receivedLength += value.length;
-    }
-
-    const allChunks = new Uint8Array(receivedLength);
-    let position = 0;
-    for (const chunk of chunks) {
-        allChunks.set(chunk, position);
-        position += chunk.length;
-    }
-
-    const audioBuffer = await audioContext.decodeAudioData(allChunks.buffer);
-    currentTrackDuration = audioBuffer.duration;
-    playerActions.setDuration(currentTrackDuration);
-
-    // For simplicity, we send the entire decoded buffer at once.
-    // In a true streaming decoder, this would happen in chunks.
-    workletNode.port.postMessage(audioBuffer.getChannelData(0));
-
     startTime = audioContext.currentTime;
     pausedAt = 0;
 }
@@ -100,9 +68,14 @@ export function resume() {
     }
 }
 
-// Seeking is a highly advanced topic with this architecture and will be deferred.
 export function seek(time: number) {
-    console.warn("Seek functionality is not implemented for this streaming architecture.");
+    if (workletNode) {
+        workletNode.port.postMessage({ seek: time });
+        if (audioContext.state === 'running') {
+            startTime = audioContext.currentTime - time;
+        }
+        pausedAt = time;
+    }
 }
 
 export function getCurrentTime(): number {
@@ -110,8 +83,4 @@ export function getCurrentTime(): number {
         return audioContext.currentTime - startTime;
     }
     return pausedAt;
-}
-
-export function getDuration(): number {
-    return currentTrackDuration;
 }
