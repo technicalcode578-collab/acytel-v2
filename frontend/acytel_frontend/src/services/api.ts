@@ -2,7 +2,7 @@ import axios from 'axios';
 import authState from '../store/auth.store';
 
 const api = axios.create({
-    baseURL: 'https://symmetrical-space-train-7v47rwwvpwqr3rrjq-3000.app.github.dev/api',
+    baseURL: 'https://expert-orbit-g4wx56647xp73wpvv-3000.app.github.dev/api',
 });
 
 // This is an Axios Request Interceptor. It's a function that runs

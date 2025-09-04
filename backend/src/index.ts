@@ -13,7 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
-  origin: 'https://symmetrical-space-train-7v47rwwvpwqr3rrjq-3001.app.github.dev'
+  origin: 'https://expert-orbit-g4wx56647xp73wpvv-3001.app.github.dev'
 };
 
 // --- Middleware Setup ---

@@ -1,86 +1,99 @@
-import { playerActions } from "../store/player.store";
-import { Decoder } from "../audio-engine/pkg/audio_engine.js";
+import { getWasmModule } from '../core/wasm-loader';
 
-let audioContext: AudioContext;
-let workletNode: AudioWorkletNode | null = null;
-let isInitialized = false;
-
-// State for pause/resume logic
-let startTime = 0;
-let pausedAt = 0;
-
-export async function initAudioContext() {
-    if (!isInitialized) {
-        audioContext = new AudioContext();
-        await audioContext.audioWorklet.addModule('audio-processor.js').catch(e => console.error(e));
-        isInitialized = true;
-    }
-    if (audioContext.state === 'suspended') {
-        await audioContext.resume();
-    }
+// Define a TypeScript interface for the object we expect from Rust
+interface DecodedAudio {
+    sample_rate: number;
+    pcm_data: Float32Array;
 }
 
-export async function play(audioData: Uint8Array) {
-    if (!isInitialized) await initAudioContext();
-    if (workletNode) {
-        workletNode.disconnect();
-    }
-    
-    workletNode = new AudioWorkletNode(audioContext, 'audio-stream-processor');
-    
-    workletNode.port.onmessage = (event) => {
-        if (event.data.finished) {
-            playerActions.setPlaying(false);
-        }
-    };
-    
-    workletNode.connect(audioContext.destination);
+let audioContext: AudioContext | null = null;
+let sourceNode: AudioBufferSourceNode | null = null;
+let currentBuffer: AudioBuffer | null = null;
+let isPaused = false;
+let contextStartTime = 0;
+let bufferOffset = 0;
 
-    // Decode the audio data using our WASM decoder.
-    const decoder = new Decoder(audioData);
-    const pcmData = decoder.decode();
-    const sampleRate = decoder.sample_rate;
-    const duration = pcmData.length / sampleRate;
-    
-    playerActions.setDuration(duration);
-    
-    // Send the full decoded audio data and sample rate to the worklet.
-    workletNode.port.postMessage({ pcm: pcmData, sampleRate: sampleRate });
+export const initAudioContext = async (sampleRate?: number) => {
+  if (audioContext && audioContext.sampleRate === sampleRate) return;
+  if (audioContext && audioContext.state !== 'closed') {
+    await audioContext.close();
+  }
+  audioContext = new AudioContext({ sampleRate });
+};
 
-    playerActions.setPlaying(true);
-    startTime = audioContext.currentTime;
-    pausedAt = 0;
+export const playFromBuffer = async (audioData: Uint8Array): Promise<number> => {
+  const wasm = getWasmModule();
+  
+  // THIS IS THE FIX: We use 'as DecodedAudio' to tell TypeScript the true shape of the object.
+  const decodedResult = wasm.decode(audioData) as DecodedAudio;
+  
+  const sampleRate = decodedResult.sample_rate;
+  const pcmData = decodedResult.pcm_data;
+
+  await initAudioContext(sampleRate);
+  
+  stop();
+  
+  const audioBuffer = audioContext!.createBuffer(1, pcmData.length, audioContext!.sampleRate);
+  audioBuffer.getChannelData(0).set(pcmData);
+  currentBuffer = audioBuffer;
+
+  return startPlayback(0);
+};
+
+const startPlayback = (offset: number): number => {
+    if (!currentBuffer) return 0;
+    sourceNode = audioContext!.createBufferSource();
+    sourceNode.buffer = currentBuffer;
+    sourceNode.connect(audioContext!.destination);
+    sourceNode.start(0, offset);
+    bufferOffset = offset;
+    contextStartTime = audioContext!.currentTime;
+    isPaused = false;
+    return currentBuffer.duration;
 }
 
-export function pause() {
-    if (audioContext && audioContext.state === 'running') {
-        audioContext.suspend();
-        pausedAt = audioContext.currentTime - startTime;
-        playerActions.setPlaying(false);
-    }
-}
+export const stop = () => {
+  if (sourceNode) {
+    sourceNode.stop();
+    sourceNode.disconnect();
+    sourceNode = null;
+  }
+  isPaused = false;
+  bufferOffset = 0;
+  contextStartTime = 0;
+  currentBuffer = null;
+};
 
-export function resume() {
-    if (audioContext && audioContext.state === 'suspended') {
-        audioContext.resume();
-        startTime = audioContext.currentTime - pausedAt;
-        playerActions.setPlaying(true);
-    }
-}
+export const pause = () => {
+  if (isPaused || !sourceNode) return;
+  bufferOffset = bufferOffset + (audioContext!.currentTime - contextStartTime);
+  sourceNode.stop();
+  isPaused = true;
+};
 
-export function seek(time: number) {
-    if (workletNode) {
-        workletNode.port.postMessage({ seek: time });
-        if (audioContext.state === 'running') {
-            startTime = audioContext.currentTime - time;
-        }
-        pausedAt = time;
-    }
-}
+export const resume = () => {
+  if (!isPaused || !currentBuffer) return;
+  startPlayback(bufferOffset);
+};
 
-export function getCurrentTime(): number {
-    if (audioContext && audioContext.state === 'running') {
-        return audioContext.currentTime - startTime;
+export const seek = (time: number) => {
+  if (currentBuffer) {
+    if (sourceNode) {
+        sourceNode.stop();
     }
-    return pausedAt;
-}
+    startPlayback(time);
+    if(isPaused){
+        audioContext?.suspend();
+    }
+  }
+};
+
+export const getCurrentTime = (): number => {
+  if (!audioContext || !currentBuffer) return 0;
+  if (isPaused) {
+    return bufferOffset;
+  }
+  const time = bufferOffset + (audioContext.currentTime - contextStartTime);
+  return Math.min(time, currentBuffer.duration);
+};

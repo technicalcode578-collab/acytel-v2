@@ -116,3 +116,4 @@ If you have tracks in your database that were added before the search feature wa
 Run this command from the backend directory:
 
 npx tsx scripts/backfill-typesense.ts
+tree -I "node_modules|target|dist" > project_structure.txt

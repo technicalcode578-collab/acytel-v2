@@ -9,3 +9,9 @@ export interface Playlist {
   created_at: string;
   updated_at: string;
 }
+
+// NEW: Add this interface for playlists where tracks have been fully populated.
+export interface HydratedPlaylist extends Omit<Playlist, 'track_ids'> {
+    tracks: Track[];
+}
+
