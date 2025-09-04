@@ -1,4 +1,6 @@
 import { Show, createEffect, createSignal } from 'solid-js';
+import { Motion, Presence } from 'solid-motion';
+import { pageTransition } from './core/motion';
 
 // Auth imports
 import authState, { logout } from './store/auth.store';
@@ -30,7 +32,6 @@ function App() {
 
   createEffect(() => {
     if (authState.isAuthenticated) {
-      // Fetch both tracks and playlists on login
       getTracks()
         .then(tracks => libraryStore.setTracks(tracks))
         .catch(err => console.error("Failed to fetch library", err));
@@ -38,7 +39,6 @@ function App() {
         .then(playlists => playlistStore.setPlaylists(playlists))
         .catch(err => console.error("Failed to fetch playlists", err));
     } else {
-      // Clear all data on logout
       libraryStore.setTracks([]);
       playlistStore.setPlaylists([]);
       searchActions.clearSearch();
@@ -98,13 +98,35 @@ function App() {
                     Logout
                   </button>
                 </header>
-                <main>
-                  <Show
-                    when={playlistStore.activePlaylist()}
-                    fallback={<MainLibraryView />}
-                  >
-                    <PlaylistView />
-                  </Show>
+                <main class="relative">
+                  <Presence exitBeforeEnter>
+                    <Show
+                      when={playlistStore.activePlaylist()}
+                      fallback={
+                        <Motion
+                          component="div"
+                          key="library"
+                          initial={pageTransition.hidden}
+                          animate={pageTransition.visible}
+                          exit={pageTransition.exit}
+                          class="absolute w-full"
+                        >
+                          <MainLibraryView />
+                        </Motion>
+                      }
+                    >
+                      <Motion
+                        component="div"
+                        key="playlist"
+                        initial={pageTransition.hidden}
+                        animate={pageTransition.visible}
+                        exit={pageTransition.exit}
+                        class="absolute w-full"
+                      >
+                        <PlaylistView />
+                      </Motion>
+                    </Show>
+                  </Presence>
                 </main>
               </div>
             </div>
