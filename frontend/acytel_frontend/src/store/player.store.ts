@@ -1,36 +1,35 @@
-import { createSignal } from "solid-js";
+import { createSignal, createEffect } from "solid-js"; // Import createEffect
 import { Track } from "../models/track";
 import * as AudioService from "../services/audio.service";
-import { getSecureTrackUrl } from "../services/track.service";
 import * as CacheService from "../services/cache.service";
+import { getSecureTrackUrl } from "../services/track.service";
 
 const [currentTrack, setCurrentTrack] = createSignal<Track | null>(null);
 const [isPlaying, setIsPlaying] = createSignal(false);
 const [isLoading, setIsLoading] = createSignal(false);
 const [currentTime, setCurrentTime] = createSignal(0);
 const [duration, setDuration] = createSignal(0);
-// ADDED: The missing isSeekable signal
 const [isSeekable, setIsSeekable] = createSignal(false);
 
-let progressInterval: number;
-
-const startProgressTracker = () => {
-    clearInterval(progressInterval);
+// This effect will now automatically manage the progress tracking interval.
+createEffect(() => {
+  let progressInterval: number;
+  if (isPlaying()) {
     progressInterval = window.setInterval(() => {
-        const time = AudioService.getCurrentTime();
-        if (duration() > 0 && time <= duration()) {
-          setCurrentTime(time);
-        }
-        if (!isPlaying()) {
-            clearInterval(progressInterval);
-        }
+      const time = AudioService.getCurrentTime();
+      if (duration() > 0 && time <= duration()) {
+        setCurrentTime(time);
+      }
     }, 250);
-};
+  }
+  // When isPlaying() becomes false, the effect re-runs and this cleanup function is called.
+  return () => clearInterval(progressInterval);
+});
 
 export const playerActions = {
-    playTrack: async (track: Track) => {
+    playTrack: async (track: Track, playlist?: Track[]) => {
         setIsLoading(true);
-        setIsSeekable(false); // Playback is not seekable until the buffer is loaded
+        setIsSeekable(false);
         setCurrentTrack(track);
         AudioService.stop();
 
@@ -48,9 +47,8 @@ export const playerActions = {
             if(audioData){
                 const trackDuration = await AudioService.playFromBuffer(new Uint8Array(audioData));
                 setDuration(trackDuration);
-                setIsPlaying(true);
-                setIsSeekable(true); // Now that the full buffer is loaded, seeking is possible
-                startProgressTracker();
+                setIsPlaying(true); // This will now automatically start the progress tracker via the effect.
+                setIsSeekable(true);
             }
 
         } catch (error) {
@@ -64,20 +62,20 @@ export const playerActions = {
     togglePlayPause: () => {
         if (isPlaying()) {
             AudioService.pause();
-            setIsPlaying(false);
+            setIsPlaying(false); // The effect will automatically stop the tracker.
         } else if (currentTrack()) {
             AudioService.resume();
-            setIsPlaying(true);
+            setIsPlaying(true); // The effect will automatically restart the tracker.
         }
     },
 
     seek: (time: number) => {
         if (isSeekable()) {
             AudioService.seek(time);
+            // Manually update currentTime immediately for a responsive feel.
             setCurrentTime(time);
         }
     },
 };
 
-// ADDED: Export the isSeekable signal
 export const playerState = { currentTrack, isPlaying, isLoading, currentTime, duration, isSeekable };
