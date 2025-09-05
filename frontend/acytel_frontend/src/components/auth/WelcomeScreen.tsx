@@ -4,11 +4,14 @@ import { createSignal, onMount, onCleanup, Component } from 'solid-js';
 import { startParticleAnimation } from '../../core/particles';
 import styles from './WelcomeScreen.module.css';
 
+import { useNavigate } from '@solidjs/router';
+
 interface WelcomeScreenProps {
-  onEnter: () => void;
+  onEnter?: () => void;
 }
 
 export const WelcomeScreen: Component<WelcomeScreenProps> = (props) => {
+  const navigate = useNavigate();
   let canvasRef: HTMLCanvasElement | undefined;
   const [showContent, setShowContent] = createSignal(false);
   const [showArrow, setShowArrow] = createSignal(false);
@@ -36,7 +39,13 @@ export const WelcomeScreen: Component<WelcomeScreenProps> = (props) => {
         </h1>
         <div class={`${styles.line} ${styles.fadeInDelay2}`} />
         <div class={`${styles.enterContainer} ${showArrow() ? styles.visible : ''}`}>
-          <button onClick={props.onEnter} class={styles.enterButton}>
+          <button onClick={() => {
+            if (props.onEnter) {
+              props.onEnter();
+            } else {
+              navigate('/login');
+            }
+          }} class={styles.enterButton}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M5 12H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>

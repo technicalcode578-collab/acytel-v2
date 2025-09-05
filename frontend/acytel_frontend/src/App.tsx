@@ -3,6 +3,8 @@
 import { Show, createEffect, createSignal } from 'solid-js';
 import { Motion, Presence } from 'solid-motion';
 import { pageTransition } from './core/motion';
+import Layout from './components/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Auth imports
 import authState, { logout } from './store/auth.store';
@@ -85,88 +87,49 @@ function App() {
   );
 
   return (
-    <div class="bg-gray-900 text-white min-h-screen">
-      <Show
-        when={authState.isAuthenticated}
-        fallback={
+    <ProtectedRoute>
+      <Layout>
+        <header class="flex justify-between items-center mb-8">
+          <h1 class="text-3xl font-extrabold">Acytel</h1>
+          <button
+            onClick={() => { logout(); window.location.href = '/login'; }}
+            class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+          >
+            Logout
+          </button>
+        </header>
+        <main class="relative">
           <Presence exitBeforeEnter>
             <Show
-              when={introFinished()}
+              when={playlistStore.activePlaylist()}
               fallback={
                 <Motion
                   component="div"
-                  key="welcome"
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5 }} // Correction: transition is a top-level prop
+                  key="library"
+                  initial={pageTransition.hidden}
+                  animate={pageTransition.visible}
+                  exit={pageTransition.exit}
+                  class="absolute w-full"
                 >
-                  <WelcomeScreen onEnter={() => setIntroFinished(true)} />
+                  <MainLibraryView />
                 </Motion>
               }
             >
               <Motion
                 component="div"
-                key="auth"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.7 }} // Correction: transition is a top-level prop
+                key="playlist"
+                initial={pageTransition.hidden}
+                animate={pageTransition.visible}
+                exit={pageTransition.exit}
+                class="absolute w-full"
               >
-                <AuthForms />
+                <PlaylistView />
               </Motion>
             </Show>
           </Presence>
-        }
-      >
-        <div class="flex h-screen">
-          <PlaylistSidebar />
-          <div class="flex-1 flex flex-col overflow-hidden">
-            <div class="flex-1 overflow-y-auto pb-20">
-              <div class="container mx-auto p-4 md:p-8">
-                <header class="flex justify-between items-center mb-8">
-                  <h1 class="text-3xl font-extrabold">Acytel</h1>
-                  <button
-                    onClick={logout}
-                    class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
-                  >
-                    Logout
-                  </button>
-                </header>
-                <main class="relative">
-                  <Presence exitBeforeEnter>
-                    <Show
-                      when={playlistStore.activePlaylist()}
-                      fallback={
-                        <Motion
-                          component="div"
-                          key="library"
-                          initial={pageTransition.hidden}
-                          animate={pageTransition.visible}
-                          exit={pageTransition.exit}
-                          class="absolute w-full"
-                        >
-                          <MainLibraryView />
-                        </Motion>
-                      }
-                    >
-                      <Motion
-                        component="div"
-                        key="playlist"
-                        initial={pageTransition.hidden}
-                        animate={pageTransition.visible}
-                        exit={pageTransition.exit}
-                        class="absolute w-full"
-                      >
-                        <PlaylistView />
-                      </Motion>
-                    </Show>
-                  </Presence>
-                </main>
-              </div>
-            </div>
-          </div>
-        </div>
-        <Player />
-      </Show>
-    </div>
+        </main>
+      </Layout>
+    </ProtectedRoute>
   );
 }
 

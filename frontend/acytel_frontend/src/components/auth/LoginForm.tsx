@@ -1,9 +1,11 @@
 import { createSignal } from "solid-js";
+import { useNavigate } from '@solidjs/router';
 import { login } from "../../services/auth.service";
 console.log("LOGIN FORM SUBMITTED!"); // <-- Add this line
 
 
 export function LoginForm() {
+  const navigate = useNavigate();
   const [email, setEmail] = createSignal("");
   const [password, setPassword] = createSignal("");
   const [error, setError] = createSignal<string | null>(null);
@@ -16,7 +18,7 @@ export function LoginForm() {
     setError(null);
     try {
       await login({ email: email(), password: password() });
-      // The global state change will automatically update the UI in App.tsx
+      navigate('/');
     } catch (err: any) {
       setError(err.response?.data?.message || "An unknown error occurred.");
     } finally {
