@@ -5,6 +5,7 @@ import { startParticleAnimation } from '../../core/particles';
 import styles from './WelcomeScreen.module.css';
 
 import { useNavigate } from '@solidjs/router';
+import authState from '../../store/auth.store';
 
 interface WelcomeScreenProps {
   onEnter?: () => void;
@@ -43,7 +44,11 @@ export const WelcomeScreen: Component<WelcomeScreenProps> = (props) => {
             if (props.onEnter) {
               props.onEnter();
             } else {
-              navigate('/login');
+              if (authState.isAuthenticated) {
+                navigate('/');
+              } else {
+                navigate('/login');
+              }
             }
           }} class={styles.enterButton}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

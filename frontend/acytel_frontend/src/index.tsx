@@ -1,11 +1,11 @@
 import { render } from 'solid-js/web';
-import App from './App';
+// ...existing code...
 import authState from './store/auth.store';
 import { useNavigate } from '@solidjs/router';
 import { Router, Route } from '@solidjs/router';
 import { WelcomeScreen } from './components/auth/WelcomeScreen';
-import { LoginForm } from './components/auth/LoginForm';
-import { RegisterForm } from './components/auth/RegisterForm';
+import AuthForms from './components/auth/AuthForms';
+import App from './App';
 import './index.css';
 import { initializeWasm } from './core/wasm-loader';
 
@@ -22,30 +22,11 @@ initializeWasm().then(() => {
     render(() => (
       <Router>
         <Route path="/welcome" component={() => <WelcomeScreen />} />
-        <Route path="/login" component={() => (
-          <div class="flex items-center justify-center h-screen bg-gray-900">
-            <div class="w-full max-w-md p-8 space-y-8 bg-gray-800 rounded-lg shadow-lg">
-              <h2 class="text-center text-3xl font-extrabold">Sign in to Acytel</h2>
-              <div class="mt-8">
-                <LoginForm />
-              </div>
-            </div>
-          </div>
-        )} />
-        <Route path="/register" component={() => (
-          <div class="flex items-center justify-center h-screen bg-gray-900">
-            <div class="w-full max-w-md p-8 space-y-8 bg-gray-800 rounded-lg shadow-lg">
-              <h2 class="text-center text-3xl font-extrabold">Create your Account</h2>
-              <div class="mt-8">
-                <RegisterForm onRegisterSuccess={() => {}} />
-              </div>
-            </div>
-          </div>
-        )} />
+  <Route path="/login" component={AuthForms} />
+  <Route path="/register" component={AuthForms} />
         <Route path="/" component={() => {
-          if (!authState.isAuthenticated) {
-            const navigate = useNavigate();
-            navigate('/welcome');
+          if (window.location.pathname === '/' && !authState.isAuthenticated) {
+            window.location.replace('/welcome');
             return null;
           }
           return <App />;
