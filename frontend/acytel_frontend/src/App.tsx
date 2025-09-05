@@ -1,3 +1,5 @@
+// frontend/acytel_frontend/src/App.tsx
+
 import { Show, createEffect, createSignal } from 'solid-js';
 import { Motion, Presence } from 'solid-motion';
 import { pageTransition } from './core/motion';
@@ -6,6 +8,7 @@ import { pageTransition } from './core/motion';
 import authState, { logout } from './store/auth.store';
 import { LoginForm } from './components/auth/LoginForm';
 import { RegisterForm } from './components/auth/RegisterForm';
+import { WelcomeScreen } from './components/auth/WelcomeScreen';
 
 // Library imports
 import { UploadForm } from './components/library/UploadForm';
@@ -29,6 +32,7 @@ import { playlistStore } from './store/playlist.store';
 
 function App() {
   const [showLogin, setShowLogin] = createSignal(true);
+  const [introFinished, setIntroFinished] = createSignal(false);
 
   createEffect(() => {
     if (authState.isAuthenticated) {
@@ -59,29 +63,57 @@ function App() {
     </>
   );
 
+  const AuthForms = () => (
+    <div class="flex items-center justify-center h-screen bg-gray-900">
+      <div class="w-full max-w-md p-8 space-y-8 bg-gray-800 rounded-lg shadow-lg">
+        <h2 class="text-center text-3xl font-extrabold">
+          {showLogin() ? 'Sign in to Acytel' : 'Create your Account'}
+        </h2>
+        <div class="mt-8">
+          <Show when={showLogin()} fallback={<RegisterForm onRegisterSuccess={() => setShowLogin(true)} />}>
+            <LoginForm />
+          </Show>
+        </div>
+        <p class="mt-6 text-center text-sm">
+          {showLogin() ? "Don't have an account? " : "Already have an account? "}
+          <button onClick={() => setShowLogin(!showLogin())} class="font-medium text-blue-400 hover:text-blue-300">
+            {showLogin() ? 'Register' : 'Sign in'}
+          </button>
+        </p>
+      </div>
+    </div>
+  );
+
   return (
     <div class="bg-gray-900 text-white min-h-screen">
       <Show
         when={authState.isAuthenticated}
         fallback={
-          <div class="flex items-center justify-center h-screen">
-            <div class="w-full max-w-md p-8 space-y-8 bg-gray-800 rounded-lg shadow-lg">
-              <h2 class="text-center text-3xl font-extrabold">
-                {showLogin() ? 'Sign in to Acytel' : 'Create your Account'}
-              </h2>
-              <div class="mt-8">
-                <Show when={showLogin()} fallback={<RegisterForm onRegisterSuccess={() => setShowLogin(true)} />}>
-                  <LoginForm />
-                </Show>
-              </div>
-              <p class="mt-6 text-center text-sm">
-                {showLogin() ? "Don't have an account? " : "Already have an account? "}
-                <button onClick={() => setShowLogin(!showLogin())} class="font-medium text-blue-400 hover:text-blue-300">
-                  {showLogin() ? 'Register' : 'Sign in'}
-                </button>
-              </p>
-            </div>
-          </div>
+          <Presence exitBeforeEnter>
+            <Show
+              when={introFinished()}
+              fallback={
+                <Motion
+                  component="div"
+                  key="welcome"
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5 }} // Correction: transition is a top-level prop
+                >
+                  <WelcomeScreen onEnter={() => setIntroFinished(true)} />
+                </Motion>
+              }
+            >
+              <Motion
+                component="div"
+                key="auth"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.7 }} // Correction: transition is a top-level prop
+              >
+                <AuthForms />
+              </Motion>
+            </Show>
+          </Presence>
         }
       >
         <div class="flex h-screen">
