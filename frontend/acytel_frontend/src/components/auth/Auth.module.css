@@ -1,0 +1,36 @@
+/* frontend/acytel_frontend/src/components/auth/Auth.module.css */
+
+.formWrapper {
+  position: relative;
+  background-color: rgba(17, 24, 39, 0.8); /* bg-gray-900 with opacity */
+  border-radius: 0.75rem; /* rounded-xl */
+  padding: 2px; /* This creates the space for the gradient "border" */
+  overflow: hidden;
+  z-index: 10;
+}
+
+.formWrapper::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  /* A smooth, cinematic gradient */
+  background: conic-gradient(from 180deg at 50% 50%, #4f46e5 0deg, #3b82f6 120deg, #14b8a6 240deg, #4f46e5 360deg);
+  z-index: -1;
+  filter: blur(20px); /* Creates the soft glow */
+  animation: spin 5s linear infinite; /* Animates the gradient */
+}
+
+.formContent {
+  background-color: #111827; /* bg-gray-900 */
+  border-radius: 0.65rem; /* Slightly smaller radius to ensure the "border" is visible */
+  padding: 2.5rem; /* More spacious padding */
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

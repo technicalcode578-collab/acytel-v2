@@ -1,10 +1,11 @@
+// frontend/acytel_frontend/src/index.tsx
 import { render } from 'solid-js/web';
-// ...existing code...
+import { Router, Route, Navigate } from '@solidjs/router';
+import { Show, Component } from 'solid-js';
+
 import authState from './store/auth.store';
-import { useNavigate } from '@solidjs/router';
-import { Router, Route } from '@solidjs/router';
-import { WelcomeScreen } from './components/auth/WelcomeScreen';
-import AuthForms from './components/auth/AuthForms';
+import { WelcomeScreen } from './components/welcome/WelcomeScreen'; // <-- PATH UPDATED
+import { AuthPage } from './components/auth/AuthPage';
 import App from './App';
 import './index.css';
 import { initializeWasm } from './core/wasm-loader';
@@ -17,20 +18,19 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   );
 }
 
+const RootRoute: Component = () => (
+  <Show when={authState.isAuthenticated} fallback={<Navigate href="/welcome" />}>
+    <App />
+  </Show>
+);
+
 initializeWasm().then(() => {
     console.log("[index.tsx] WASM module ready. Rendering application.");
     render(() => (
       <Router>
-        <Route path="/welcome" component={() => <WelcomeScreen />} />
-  <Route path="/login" component={AuthForms} />
-  <Route path="/register" component={AuthForms} />
-        <Route path="/" component={() => {
-          if (window.location.pathname === '/' && !authState.isAuthenticated) {
-            window.location.replace('/welcome');
-            return null;
-          }
-          return <App />;
-        }} />
+        <Route path="/welcome" component={WelcomeScreen} />
+        <Route path="/login" component={AuthPage} />
+        <Route path="/*" component={RootRoute} />
       </Router>
     ), root!);
 }).catch(error => {

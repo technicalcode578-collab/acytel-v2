@@ -1,16 +1,14 @@
 // frontend/acytel_frontend/src/App.tsx
 
-import { Show, createEffect, createSignal } from 'solid-js';
+import { Show, createEffect } from 'solid-js';
 import { Motion, Presence } from 'solid-motion';
+import { useNavigate } from '@solidjs/router';
 import { pageTransition } from './core/motion';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Auth imports
 import authState, { logout } from './store/auth.store';
-import { LoginForm } from './components/auth/LoginForm';
-import { RegisterForm } from './components/auth/RegisterForm';
-import { WelcomeScreen } from './components/auth/WelcomeScreen';
 
 // Library imports
 import { UploadForm } from './components/library/UploadForm';
@@ -18,25 +16,21 @@ import { TrackList } from './components/library/TrackList';
 import { getTracks } from './services/track.service';
 import { libraryStore } from './store/library.store';
 
-// Player import
-import { Player } from './components/player/Player';
-
 // Search imports
 import { SearchBar } from './components/search/SearchBar';
 import { SearchResults } from './components/search/SearchResults';
 import searchState, { searchActions } from './store/search.store';
 
 // Playlist imports
-import { PlaylistSidebar } from './components/playlist/PlaylistSidebar';
 import { PlaylistView } from './components/playlist/PlaylistView';
 import { getPlaylists } from './services/playlist.service';
 import { playlistStore } from './store/playlist.store';
 
 function App() {
-  const [showLogin, setShowLogin] = createSignal(true);
-  const [introFinished, setIntroFinished] = createSignal(false);
+  const navigate = useNavigate();
 
   createEffect(() => {
+    // This effect now correctly runs only when the authenticated app is mounted
     if (authState.isAuthenticated) {
       getTracks()
         .then(tracks => libraryStore.setTracks(tracks))
@@ -44,11 +38,6 @@ function App() {
       getPlaylists()
         .then(playlists => playlistStore.setPlaylists(playlists))
         .catch(err => console.error("Failed to fetch playlists", err));
-    } else {
-      libraryStore.setTracks([]);
-      playlistStore.setPlaylists([]);
-      searchActions.clearSearch();
-      playlistStore.clearActivePlaylist();
     }
   });
 
@@ -65,34 +54,16 @@ function App() {
     </>
   );
 
-  const AuthForms = () => (
-    <div class="flex items-center justify-center h-screen bg-gray-900">
-      <div class="w-full max-w-md p-8 space-y-8 bg-gray-800 rounded-lg shadow-lg">
-        <h2 class="text-center text-3xl font-extrabold">
-          {showLogin() ? 'Sign in to Acytel' : 'Create your Account'}
-        </h2>
-        <div class="mt-8">
-          <Show when={showLogin()} fallback={<RegisterForm onRegisterSuccess={() => setShowLogin(true)} />}>
-            <LoginForm />
-          </Show>
-        </div>
-        <p class="mt-6 text-center text-sm">
-          {showLogin() ? "Don't have an account? " : "Already have an account? "}
-          <button onClick={() => setShowLogin(!showLogin())} class="font-medium text-blue-400 hover:text-blue-300">
-            {showLogin() ? 'Register' : 'Sign in'}
-          </button>
-        </p>
-      </div>
-    </div>
-  );
-
   return (
     <ProtectedRoute>
       <Layout>
         <header class="flex justify-between items-center mb-8">
           <h1 class="text-3xl font-extrabold">Acytel</h1>
           <button
-            onClick={() => { logout(); window.location.href = '/welcome'; }}
+            onClick={() => {
+              logout();
+              navigate('/welcome'); // Use router navigation for a seamless SPA experience
+            }}
             class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
           >
             Logout
