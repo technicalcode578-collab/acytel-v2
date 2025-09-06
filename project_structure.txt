@@ -41,11 +41,26 @@
 │       ├── package-lock.json
 │       ├── package.json
 │       ├── pnpm-lock.yaml
+│       ├── postcss.config.cjs
+│       ├── postcss.config.js
 │       ├── public
+│       │   ├── assets
+│       │   │   ├── abstract-music-album-cover.png
+│       │   │   ├── album-cover-ocean.png
+│       │   │   ├── digital-album-cover.png
+│       │   │   ├── favicon.ico
+│       │   │   ├── placeholder-logo.png
+│       │   │   ├── placeholder-logo.svg
+│       │   │   ├── placeholder-user.jpg
+│       │   │   ├── placeholder.jpg
+│       │   │   ├── placeholder.svg
+│       │   │   ├── stellar-album-cover.png
+│       │   │   └── urban-album-cover.png
 │       │   └── audio-processor.js
 │       ├── src
 │       │   ├── App.module.css
-│       │   ├── App.tsx
+│       │   ├── app
+│       │   │   └── App.tsx
 │       │   ├── assets
 │       │   │   └── favicon.ico
 │       │   ├── audio-engine
@@ -59,44 +74,74 @@
 │       │   │   │   └── package.json
 │       │   │   └── src
 │       │   │       └── lib.rs
-│       │   ├── components
+│       │   ├── core
+│       │   │   ├── audio.service.ts
+│       │   │   ├── motion.ts
+│       │   │   ├── particles.ts
+│       │   │   └── wasm-loader.ts
+│       │   ├── features
 │       │   │   ├── auth
-│       │   │   │   ├── LoginForm.tsx
-│       │   │   │   └── RegisterForm.tsx
+│       │   │   │   ├── api
+│       │   │   │   │   └── auth.service.ts
+│       │   │   │   ├── components
+│       │   │   │   ├── model
+│       │   │   │   │   └── auth.store.ts
+│       │   │   │   └── ui
+│       │   │   │       ├── Auth.module.css
+│       │   │   │       ├── LoginForm.tsx
+│       │   │   │       └── RegisterForm.tsx
 │       │   │   ├── library
-│       │   │   │   ├── TrackList.tsx
-│       │   │   │   └── UploadForm.tsx
+│       │   │   │   ├── api
+│       │   │   │   │   └── track.service.ts
+│       │   │   │   ├── model
+│       │   │   │   │   └── library.store.ts
+│       │   │   │   └── ui
+│       │   │   │       ├── TrackList.tsx
+│       │   │   │       └── UploadForm.tsx
 │       │   │   ├── player
-│       │   │   │   └── Player.tsx
+│       │   │   │   ├── api
+│       │   │   │   ├── model
+│       │   │   │   │   └── player.store.ts
+│       │   │   │   └── ui
+│       │   │   │       └── Player.tsx
 │       │   │   ├── playlist
-│       │   │   │   ├── AddToPlaylistModal.tsx
-│       │   │   │   ├── CreatePlaylistModal.tsx
-│       │   │   │   ├── PlaylistSidebar.tsx
-│       │   │   │   ├── PlaylistView.tsx
-│       │   │   │   └── TrackList.tsx
+│       │   │   │   ├── api
+│       │   │   │   │   └── playlist.service.ts
+│       │   │   │   ├── model
+│       │   │   │   │   └── playlist.store.ts
+│       │   │   │   └── ui
+│       │   │   │       ├── AddToPlaylistModal.tsx
+│       │   │   │       ├── CreatePlaylistModal.tsx
+│       │   │   │       ├── PlaylistSidebar.tsx
+│       │   │   │       └── PlaylistView.tsx
 │       │   │   └── search
-│       │   │       ├── SearchBar.tsx
-│       │   │       └── SearchResults.tsx
+│       │   │       ├── api
+│       │   │       ├── model
+│       │   │       │   └── search.store.ts
+│       │   │       └── ui
+│       │   │           ├── SearchBar.tsx
+│       │   │           └── SearchResults.tsx
 │       │   ├── index.css
 │       │   ├── index.tsx
 │       │   ├── logo.svg
-│       │   ├── models
-│       │   │   ├── playlist.ts
-│       │   │   └── track.ts
-│       │   ├── services
-│       │   │   ├── api.ts
-│       │   │   ├── audio.service.ts
-│       │   │   ├── auth.service.ts
-│       │   │   ├── cache.service.ts
-│       │   │   ├── playlist.service.ts
-│       │   │   ├── precog.service.ts
-│       │   │   └── track.service.ts
-│       │   └── store
-│       │       ├── auth.store.ts
-│       │       ├── library.store.ts
-│       │       ├── player.store.ts
-│       │       ├── playlist.store.ts
-│       │       └── search.store.ts
+│       │   ├── pages
+│       │   │   ├── AuthPage.tsx
+│       │   │   ├── MainApplicationPage.tsx
+│       │   │   ├── WelcomePage.module.css
+│       │   │   └── WelcomePage.tsx
+│       │   └── shared
+│       │       ├── api
+│       │       │   └── index.ts
+│       │       ├── lib
+│       │       │   ├── cache.service.ts
+│       │       │   ├── playlist.model.ts
+│       │       │   └── track.model.ts
+│       │       ├── store
+│       │       └── ui
+│       │           ├── Layout.tsx
+│       │           └── ProtectedRoute.tsx
+│       ├── tailwind.config.cjs
+│       ├── tailwind.config.js
 │       ├── tsconfig.json
 │       └── vite.config.ts
 ├── generate-token.js
@@ -112,4 +157,4 @@
         └── src
             └── main.rs
 
-33 directories, 80 files
+55 directories, 103 files
