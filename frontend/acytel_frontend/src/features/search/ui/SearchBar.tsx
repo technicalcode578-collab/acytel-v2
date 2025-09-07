@@ -1,7 +1,7 @@
 // File: src/features/search/ui/SearchBar.tsx
 import { Component } from "solid-js";
 import searchState, { searchActions } from "../model/search.store";
-import { searchTracks } from "../../library/api/track.service";
+import { searchTracks } from "../../../entities/track/api/track.api";
 
 export const SearchBar: Component = () => {
   let debounceTimeout: number;

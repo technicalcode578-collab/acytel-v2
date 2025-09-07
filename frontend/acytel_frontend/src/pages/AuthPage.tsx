@@ -1,7 +1,7 @@
 // File: src/pages/AuthPage.tsx
 import { createSignal, onMount, onCleanup, Component, Show } from 'solid-js';
 import { Motion } from 'solid-motion';
-import { startParticleAnimation } from '../core/particles';
+import { startParticleAnimation } from "../shared/lib/particles";
 import styles from './WelcomePage.module.css'; // Re-uses the welcome page styles
 import { LoginForm } from '../features/auth/ui/LoginForm';
 import { RegisterForm } from '../features/auth/ui/RegisterForm';

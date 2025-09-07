@@ -1,6 +1,6 @@
-// File: src/features/library/model/library.store.ts
+// File: src/entities/track/model/track.store.ts
 import { createStore } from "solid-js/store";
-import { Track } from "../../../shared/lib/track.model";
+import { Track } from "./track.model"; // CORRECTED PATH
 
 const [tracks, setTracks] = createStore<Track[]>([]);
 

@@ -1,9 +1,9 @@
 // File: src/features/player/model/player.store.ts
 import { createSignal, createEffect } from "solid-js";
-import { Track } from "../../../shared/lib/track.model";
-import * as AudioService from "../../../core/audio.service";
+import { Track } from "../../../entities/track/model/track.model";
+import * as AudioService from "../../../shared/lib/audio.service";
 import * as CacheService from "../../../shared/lib/cache.service";
-import { getSecureTrackUrl } from "../../library/api/track.service";
+import { getSecureTrackUrl } from "../../../entities/track/api/track.api"; 
 
 const [currentTrack, setCurrentTrack] = createSignal<Track | null>(null);
 const [isPlaying, setIsPlaying] = createSignal(false);

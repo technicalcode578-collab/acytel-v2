@@ -76,6 +76,7 @@
 │       │   │       └── lib.rs
 │       │   ├── core
 │       │   │   ├── audio.service.ts
+│       │   │   ├── color.ts
 │       │   │   ├── motion.ts
 │       │   │   ├── particles.ts
 │       │   │   └── wasm-loader.ts
@@ -103,6 +104,7 @@
 │       │   │   │   ├── model
 │       │   │   │   │   └── player.store.ts
 │       │   │   │   └── ui
+│       │   │   │       ├── NowPlayingSidebar.tsx
 │       │   │   │       └── Player.tsx
 │       │   │   ├── playlist
 │       │   │   │   ├── api
@@ -112,6 +114,7 @@
 │       │   │   │   └── ui
 │       │   │   │       ├── AddToPlaylistModal.tsx
 │       │   │   │       ├── CreatePlaylistModal.tsx
+│       │   │   │       ├── PlaylistGrid.tsx
 │       │   │   │       ├── PlaylistSidebar.tsx
 │       │   │   │       └── PlaylistView.tsx
 │       │   │   └── search
@@ -137,6 +140,7 @@
 │       │       │   ├── playlist.model.ts
 │       │       │   └── track.model.ts
 │       │       ├── store
+│       │       │   └── view.store.ts
 │       │       └── ui
 │       │           ├── Layout.tsx
 │       │           └── ProtectedRoute.tsx
@@ -157,4 +161,4 @@
         └── src
             └── main.rs
 
-55 directories, 103 files
+55 directories, 107 files

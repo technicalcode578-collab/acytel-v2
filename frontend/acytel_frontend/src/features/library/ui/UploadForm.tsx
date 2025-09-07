@@ -1,7 +1,7 @@
 // File: src/features/library/ui/UploadForm.tsx
 import { createSignal, Component } from "solid-js";
-import { uploadTrack } from "../api/track.service";
-import { libraryStore } from "../model/library.store";
+import { uploadTrack } from "../../../entities/track/api/track.api"; // CORRECTED
+import { libraryStore } from "../../../entities/track/model/track.store"; // CORRECTED
 
 export const UploadForm: Component = () => {
     const [selectedFile, setSelectedFile] = createSignal<File | null>(null);

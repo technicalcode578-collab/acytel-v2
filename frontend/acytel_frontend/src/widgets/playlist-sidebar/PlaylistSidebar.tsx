@@ -1,7 +1,7 @@
 // File: src/features/playlist/ui/PlaylistSidebar.tsx
 import { Component, For, createSignal, Show } from "solid-js";
-import { playlistStore } from "../model/playlist.store";
-import { CreatePlaylistModal } from "./CreatePlaylistModal";
+import { playlistStore } from "../../features/playlist/model/playlist.store";
+import { CreatePlaylistModal } from "../../features/playlist/ui/CreatePlaylistModal"; 
 
 export const PlaylistSidebar: Component = () => {
   const [isModalOpen, setIsModalOpen] = createSignal(false);

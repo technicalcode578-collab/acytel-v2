@@ -1,7 +1,7 @@
 // File: src/pages/WelcomePage.tsx
 import { createSignal, onMount, onCleanup, Component } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { startParticleAnimation } from '../core/particles';
+import { startParticleAnimation } from "../shared/lib/particles";
 import styles from './WelcomePage.module.css';
 
 export const WelcomePage: Component = () => {

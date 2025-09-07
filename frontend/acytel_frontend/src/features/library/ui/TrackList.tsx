@@ -1,10 +1,10 @@
 // File: src/features/library/ui/TrackList.tsx
 import { Component, For, Show, createSignal } from "solid-js";
 import { Motion } from "solid-motion";
-import { staggerContainer, staggerItem } from "../../../core/motion";
-import { libraryStore } from "../model/library.store";
+import { staggerContainer, staggerItem } from "../../../shared/lib/motion"; // CORRECTED
+import { libraryStore } from "../../../entities/track/model/track.store"; // CORRECTED
 import { playerActions } from "../../player/model/player.store";
-import { Track } from "../../../shared/lib/track.model";
+import { Track } from "../../../entities/track/model/track.model";
 import { AddToPlaylistModal } from "../../playlist/ui/AddToPlaylistModal";
 
 export const TrackList: Component = () => {

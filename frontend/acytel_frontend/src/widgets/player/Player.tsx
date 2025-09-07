@@ -1,6 +1,6 @@
 // File: src/features/player/ui/Player.tsx
 import { createEffect, onCleanup, Component } from 'solid-js';
-import { playerState, playerActions } from '../model/player.store';
+import { playerState, playerActions } from "../../features/player/model/player.store"; 
 import { Show } from 'solid-js';
 
 export const Player: Component = () => {

@@ -1,7 +1,7 @@
 // File: src/shared/ui/Layout.tsx
 import { JSX } from 'solid-js';
-import { PlaylistSidebar } from '../../features/playlist/ui/PlaylistSidebar';
-import { Player } from '../../features/player/ui/Player';
+import { PlaylistSidebar } from '../../widgets/playlist-sidebar/PlaylistSidebar';
+import { Player } from '../../widgets/player/Player';
 
 export default function Layout(props: { children: JSX.Element }) {
   return (
