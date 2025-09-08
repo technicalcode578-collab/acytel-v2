@@ -1,14 +1,12 @@
-// File: src/app/ui/App.tsx
+// File: src/app/ui/App.tsx (Corrected)
 import type { Component } from 'solid-js';
 import { AppRouter } from '../providers/router';
-import styles from '../styles/App.module.css';
-import logo from '../assets/logo.svg';
 
+// The root App component should NOT contain any styling or layout wrappers.
+// Its only job is to render the router.
 const App: Component = () => {
   return (
-    <div>
-      <AppRouter />
-    </div>
+    <AppRouter />
   );
 };
 

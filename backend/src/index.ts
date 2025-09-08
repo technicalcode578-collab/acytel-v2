@@ -13,7 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
-  origin: 'https://expert-orbit-g4wx56647xp73wpvv-3001.app.github.dev'
+  origin: process.env.CORS_ORIGIN
 };
 
 // --- Middleware Setup ---

@@ -1,0 +1,43 @@
+/* File: src/widgets/playlist-sidebar/PlaylistSidebar.module.css (Definitive) */
+.sidebarWrapper {
+  display: flex;
+  flex-direction: column;
+  /* CRITICAL: This creates the 8px gap BETWEEN the two sidebar panels. */
+  gap: 8px;
+  height: 100%;
+}
+
+/* CRITICAL: This class provides the glassmorphism effect. */
+.glassPanel {
+  background: rgba(18, 18, 18, 0.7); /* Increased opacity slightly for definition */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.navSection {
+  padding: 0.75rem;
+}
+
+.librarySection {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0.75rem;
+}
+
+/* ... other styles remain the same ... */
+.navItem { display: flex; align-items: center; gap: 1rem; padding: 0.5rem 0.75rem; border-radius: 4px; text-decoration: none; font-weight: 700; transition: color 0.3s ease, background-color 0.3s ease; }
+.navItem.active { color: var(--text-base); background-color: rgba(255, 255, 255, 0.1); }
+.navItem.inactive { color: var(--text-subdued); }
+.navItem:hover { color: var(--text-base); }
+.libraryHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; padding: 0 0.75rem; }
+.playlistContainer { overflow-y: auto; flex-grow: 1; padding-right: 4px; }
+.playlistItem { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; border-radius: 4px; cursor: pointer; transition: background-color 0.2s ease; }
+.playlistItem:hover { background-color: rgba(255, 255, 255, 0.05); }
+.playlistImage { width: 48px; height: 48px; border-radius: 4px; }
+.playlistInfo { display: flex; flex-direction: column; }
+.playlistTitle { font-weight: 600; color: var(--text-base); }
+.playlistMeta { font-size: 0.875rem; color: var(--text-subdued); }

@@ -1,22 +1,22 @@
-// File: src/shared/ui/Layout.tsx
+// File: src/shared/ui/Layout.tsx (Definitive)
 import { JSX } from 'solid-js';
 import { PlaylistSidebar } from '../../widgets/playlist-sidebar/PlaylistSidebar';
-import { Player } from '../../widgets/player/Player';
+import { NowPlayingSidebar } from '../../widgets/player/NowPlayingSidebar';
+import styles from './Layout.module.css';
 
 export default function Layout(props: { children: JSX.Element }) {
   return (
-    <div class="bg-gray-900 text-white min-h-screen">
-      <div class="flex h-screen">
-        <PlaylistSidebar />
-        <div class="flex-1 flex flex-col overflow-hidden">
-          <div class="flex-1 overflow-y-auto pb-20">
-            <div class="container mx-auto p-4 md:p-8">
-              {props.children}
-            </div>
-          </div>
-        </div>
-      </div>
-      <Player />
+    // CRITICAL: This class applies the grid, gaps, and padding.
+    <div class={styles.appContainer}>
+      <aside class={styles.leftSidebar}>
+        <PlaylistSidebar /> 
+      </aside>
+      <main class={styles.mainView}>
+        {props.children}
+      </main>
+      <aside class={styles.rightSidebar}>
+        <NowPlayingSidebar />
+      </aside>
     </div>
   );
 }

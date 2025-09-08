@@ -189,7 +189,7 @@ export async function generateSecureStreamLink(req: Request, res: Response) {
 
     // --- THIS IS THE CRITICAL FIX ---
     // IMPORTANT: Replace the placeholder with the public URL for port 8000 from your Codespace
-    const RUST_SERVICE_BASE_URL = 'https://expert-orbit-g4wx56647xp73wpvv-8000.app.github.dev';
+    const RUST_SERVICE_BASE_URL = process.env.STREAMER_BASE_URL;
 
     const secureUrl = `${RUST_SERVICE_BASE_URL}/stream?token=${tempToken}`;
 

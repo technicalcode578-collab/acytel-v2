@@ -1,0 +1,45 @@
+/* File: src/pages/HomePage.module.css (Corrected) */
+.pageWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem; /* Replaces the invalid 'space-y' property */
+  padding: 1.5rem;
+}
+
+.greeting {
+  font-size: 2.25rem; /* 36px */
+  font-weight: 700;
+  color: var(--text-base);
+}
+
+.quickPicksGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.pickCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  overflow: hidden;
+}
+
+.pickCard:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.pickImage {
+  width: 80px;
+  height: 80px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.pickTitle {
+  font-weight: 700;
+  color: var(--text-base);
+}

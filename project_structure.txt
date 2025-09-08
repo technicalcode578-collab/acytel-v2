@@ -58,11 +58,18 @@
 │       │   │   └── urban-album-cover.png
 │       │   └── audio-processor.js
 │       ├── src
-│       │   ├── App.module.css
 │       │   ├── app
-│       │   │   └── App.tsx
-│       │   ├── assets
-│       │   │   └── favicon.ico
+│       │   │   ├── assets
+│       │   │   │   ├── favicon.ico
+│       │   │   │   └── logo.svg
+│       │   │   ├── index.tsx
+│       │   │   ├── providers
+│       │   │   │   └── router.tsx
+│       │   │   ├── styles
+│       │   │   │   ├── App.module.css
+│       │   │   │   └── index.css
+│       │   │   └── ui
+│       │   │       └── App.tsx
 │       │   ├── audio-engine
 │       │   │   ├── Cargo.lock
 │       │   │   ├── Cargo.toml
@@ -74,38 +81,32 @@
 │       │   │   │   └── package.json
 │       │   │   └── src
 │       │   │       └── lib.rs
-│       │   ├── core
-│       │   │   ├── audio.service.ts
-│       │   │   ├── color.ts
-│       │   │   ├── motion.ts
-│       │   │   ├── particles.ts
-│       │   │   └── wasm-loader.ts
+│       │   ├── entities
+│       │   │   └── track
+│       │   │       ├── api
+│       │   │       │   └── track.api.ts
+│       │   │       └── model
+│       │   │           ├── track.model.ts
+│       │   │           └── track.store.ts
 │       │   ├── features
 │       │   │   ├── auth
 │       │   │   │   ├── api
 │       │   │   │   │   └── auth.service.ts
-│       │   │   │   ├── components
 │       │   │   │   ├── model
 │       │   │   │   │   └── auth.store.ts
 │       │   │   │   └── ui
 │       │   │   │       ├── Auth.module.css
+│       │   │   │       ├── GuestRoute.tsx
 │       │   │   │       ├── LoginForm.tsx
+│       │   │   │       ├── ProtectedRoute.tsx
 │       │   │   │       └── RegisterForm.tsx
 │       │   │   ├── library
-│       │   │   │   ├── api
-│       │   │   │   │   └── track.service.ts
-│       │   │   │   ├── model
-│       │   │   │   │   └── library.store.ts
 │       │   │   │   └── ui
 │       │   │   │       ├── TrackList.tsx
 │       │   │   │       └── UploadForm.tsx
 │       │   │   ├── player
-│       │   │   │   ├── api
-│       │   │   │   ├── model
-│       │   │   │   │   └── player.store.ts
-│       │   │   │   └── ui
-│       │   │   │       ├── NowPlayingSidebar.tsx
-│       │   │   │       └── Player.tsx
+│       │   │   │   └── model
+│       │   │   │       └── player.store.ts
 │       │   │   ├── playlist
 │       │   │   │   ├── api
 │       │   │   │   │   └── playlist.service.ts
@@ -115,35 +116,39 @@
 │       │   │   │       ├── AddToPlaylistModal.tsx
 │       │   │   │       ├── CreatePlaylistModal.tsx
 │       │   │   │       ├── PlaylistGrid.tsx
-│       │   │   │       ├── PlaylistSidebar.tsx
 │       │   │   │       └── PlaylistView.tsx
 │       │   │   └── search
-│       │   │       ├── api
 │       │   │       ├── model
 │       │   │       │   └── search.store.ts
 │       │   │       └── ui
 │       │   │           ├── SearchBar.tsx
 │       │   │           └── SearchResults.tsx
-│       │   ├── index.css
-│       │   ├── index.tsx
-│       │   ├── logo.svg
 │       │   ├── pages
 │       │   │   ├── AuthPage.tsx
 │       │   │   ├── MainApplicationPage.tsx
 │       │   │   ├── WelcomePage.module.css
 │       │   │   └── WelcomePage.tsx
-│       │   └── shared
-│       │       ├── api
-│       │       │   └── index.ts
-│       │       ├── lib
-│       │       │   ├── cache.service.ts
-│       │       │   ├── playlist.model.ts
-│       │       │   └── track.model.ts
-│       │       ├── store
-│       │       │   └── view.store.ts
-│       │       └── ui
-│       │           ├── Layout.tsx
-│       │           └── ProtectedRoute.tsx
+│       │   ├── shared
+│       │   │   ├── api
+│       │   │   │   └── index.ts
+│       │   │   ├── lib
+│       │   │   │   ├── audio.service.ts
+│       │   │   │   ├── cache.service.ts
+│       │   │   │   ├── color.ts
+│       │   │   │   ├── motion.ts
+│       │   │   │   ├── particles.ts
+│       │   │   │   ├── playlist.model.ts
+│       │   │   │   └── wasm-loader.ts
+│       │   │   ├── store
+│       │   │   │   └── view.store.ts
+│       │   │   └── ui
+│       │   │       └── Layout.tsx
+│       │   └── widgets
+│       │       ├── player
+│       │       │   ├── NowPlayingSidebar.tsx
+│       │       │   └── Player.tsx
+│       │       └── playlist-sidebar
+│       │           └── PlaylistSidebar.tsx
 │       ├── tailwind.config.cjs
 │       ├── tailwind.config.js
 │       ├── tsconfig.json
@@ -161,4 +166,4 @@
         └── src
             └── main.rs
 
-55 directories, 107 files
+58 directories, 109 files
