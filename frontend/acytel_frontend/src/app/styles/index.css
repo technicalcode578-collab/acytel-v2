@@ -1,42 +1,4 @@
 /* File: src/app/styles/index.css */
-:root {
-  --background-base: #000000;
-  --background-highlight: #121212;
-  --background-press: #000000;
-  --background-elevated-base: #242424;
-  --background-elevated-highlight: #2a2a2a;
-  --text-base: #ffffff;
-  --text-subdued: #a7a7a7;
-  --essential-base: #ffffff;
-  --essential-subdued: #727272;
-  --decorative-subdued: #393939;
-  --color-accent: #1db954; /* Sona Green */
-
-  color-scheme: dark;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  background-color: var(--background-base);
-  color: var(--text-base);
-}
-
-/* Custom Sona scrollbar */
-::-webkit-scrollbar {
-  width: 12px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: var(--decorative-subdued);
-  border-radius: 20px;
-  border: 3px solid var(--background-highlight);
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

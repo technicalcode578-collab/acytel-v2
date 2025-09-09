@@ -41,8 +41,8 @@
 │       ├── package-lock.json
 │       ├── package.json
 │       ├── pnpm-lock.yaml
-│       ├── postcss.config.cjs
 │       ├── postcss.config.js
+│       ├── project_structure.txt
 │       ├── public
 │       │   ├── assets
 │       │   │   ├── abstract-music-album-cover.png
@@ -125,7 +125,7 @@
 │       │   │           └── SearchResults.tsx
 │       │   ├── pages
 │       │   │   ├── AuthPage.tsx
-│       │   │   ├── MainApplicationPage.tsx
+│       │   │   ├── HomePage.tsx
 │       │   │   ├── WelcomePage.module.css
 │       │   │   └── WelcomePage.tsx
 │       │   ├── shared
@@ -137,19 +137,20 @@
 │       │   │   │   ├── color.ts
 │       │   │   │   ├── motion.ts
 │       │   │   │   ├── particles.ts
-│       │   │   │   ├── playlist.model.ts
 │       │   │   │   └── wasm-loader.ts
 │       │   │   ├── store
 │       │   │   │   └── view.store.ts
 │       │   │   └── ui
 │       │   │       └── Layout.tsx
 │       │   └── widgets
+│       │       ├── BottomNavBar
+│       │       │   └── BottomNavBar.tsx
+│       │       ├── GlobalPlayer
 │       │       ├── player
 │       │       │   ├── NowPlayingSidebar.tsx
 │       │       │   └── Player.tsx
 │       │       └── playlist-sidebar
 │       │           └── PlaylistSidebar.tsx
-│       ├── tailwind.config.cjs
 │       ├── tailwind.config.js
 │       ├── tsconfig.json
 │       └── vite.config.ts
@@ -166,4 +167,4 @@
         └── src
             └── main.rs
 
-58 directories, 109 files
+60 directories, 108 files

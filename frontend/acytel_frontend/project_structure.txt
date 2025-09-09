@@ -1,0 +1,124 @@
+.
+├── README.md
+├── index.html
+├── package-lock.json
+├── package.json
+├── pnpm-lock.yaml
+├── postcss.config.js
+├── project_structure.txt
+├── public
+│   ├── assets
+│   │   ├── abstract-music-album-cover.png
+│   │   ├── album-cover-ocean.png
+│   │   ├── digital-album-cover.png
+│   │   ├── favicon.ico
+│   │   ├── placeholder-logo.png
+│   │   ├── placeholder-logo.svg
+│   │   ├── placeholder-user.jpg
+│   │   ├── placeholder.jpg
+│   │   ├── placeholder.svg
+│   │   ├── stellar-album-cover.png
+│   │   └── urban-album-cover.png
+│   └── audio-processor.js
+├── src
+│   ├── app
+│   │   ├── assets
+│   │   │   ├── favicon.ico
+│   │   │   └── logo.svg
+│   │   ├── index.tsx
+│   │   ├── providers
+│   │   │   └── router.tsx
+│   │   ├── styles
+│   │   │   ├── App.module.css
+│   │   │   └── index.css
+│   │   └── ui
+│   │       └── App.tsx
+│   ├── audio-engine
+│   │   ├── Cargo.lock
+│   │   ├── Cargo.toml
+│   │   ├── pkg
+│   │   │   ├── audio_engine.d.ts
+│   │   │   ├── audio_engine.js
+│   │   │   ├── audio_engine_bg.wasm
+│   │   │   ├── audio_engine_bg.wasm.d.ts
+│   │   │   └── package.json
+│   │   └── src
+│   │       └── lib.rs
+│   ├── entities
+│   │   └── track
+│   │       ├── api
+│   │       │   └── track.api.ts
+│   │       └── model
+│   │           ├── track.model.ts
+│   │           └── track.store.ts
+│   ├── features
+│   │   ├── auth
+│   │   │   ├── api
+│   │   │   │   └── auth.service.ts
+│   │   │   ├── model
+│   │   │   │   └── auth.store.ts
+│   │   │   └── ui
+│   │   │       ├── Auth.module.css
+│   │   │       ├── GuestRoute.tsx
+│   │   │       ├── LoginForm.tsx
+│   │   │       ├── ProtectedRoute.tsx
+│   │   │       └── RegisterForm.tsx
+│   │   ├── library
+│   │   │   └── ui
+│   │   │       ├── TrackList.tsx
+│   │   │       └── UploadForm.tsx
+│   │   ├── player
+│   │   │   └── model
+│   │   │       └── player.store.ts
+│   │   ├── playlist
+│   │   │   ├── api
+│   │   │   │   └── playlist.service.ts
+│   │   │   ├── model
+│   │   │   │   └── playlist.store.ts
+│   │   │   └── ui
+│   │   │       ├── AddToPlaylistModal.tsx
+│   │   │       ├── CreatePlaylistModal.tsx
+│   │   │       ├── PlaylistGrid.tsx
+│   │   │       └── PlaylistView.tsx
+│   │   └── search
+│   │       ├── model
+│   │       │   └── search.store.ts
+│   │       └── ui
+│   │           ├── SearchBar.tsx
+│   │           └── SearchResults.tsx
+│   ├── pages
+│   │   ├── AuthPage.tsx
+│   │   ├── HomePage.module.css
+│   │   ├── HomePage.tsx
+│   │   ├── MainApplicationPage.tsx
+│   │   ├── WelcomePage.module.css
+│   │   └── WelcomePage.tsx
+│   ├── shared
+│   │   ├── api
+│   │   │   └── index.ts
+│   │   ├── lib
+│   │   │   ├── audio.service.ts
+│   │   │   ├── cache.service.ts
+│   │   │   ├── color.ts
+│   │   │   ├── motion.ts
+│   │   │   ├── particles.ts
+│   │   │   ├── playlist.model.ts
+│   │   │   └── wasm-loader.ts
+│   │   ├── store
+│   │   │   └── view.store.ts
+│   │   └── ui
+│   │       ├── Layout.module.css
+│   │       └── Layout.tsx
+│   └── widgets
+│       ├── player
+│       │   ├── NowPlayingSidebar.module.css
+│       │   ├── NowPlayingSidebar.tsx
+│       │   └── Player.tsx
+│       └── playlist-sidebar
+│           ├── PlaylistSidebar.module.css
+│           └── PlaylistSidebar.tsx
+├── tailwind.config.js
+├── tsconfig.json
+└── vite.config.ts
+
+41 directories, 81 files

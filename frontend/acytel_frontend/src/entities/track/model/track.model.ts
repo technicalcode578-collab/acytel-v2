@@ -1,4 +1,3 @@
-// File: src/shared/lib/track.model.ts
 export interface Track {
   id: string;
   title: string;
