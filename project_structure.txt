@@ -42,20 +42,15 @@
 │       ├── package.json
 │       ├── pnpm-lock.yaml
 │       ├── postcss.config.js
-│       ├── project_structure.txt
 │       ├── public
 │       │   ├── assets
-│       │   │   ├── abstract-music-album-cover.png
-│       │   │   ├── album-cover-ocean.png
-│       │   │   ├── digital-album-cover.png
-│       │   │   ├── favicon.ico
-│       │   │   ├── placeholder-logo.png
-│       │   │   ├── placeholder-logo.svg
-│       │   │   ├── placeholder-user.jpg
-│       │   │   ├── placeholder.jpg
-│       │   │   ├── placeholder.svg
-│       │   │   ├── stellar-album-cover.png
-│       │   │   └── urban-album-cover.png
+│       │   │   ├── album_header_bg.png
+│       │   │   ├── albums
+│       │   │   │   ├── cover_1.jpg
+│       │   │   │   ├── cover_2.jpg
+│       │   │   │   ├── cover_3.jpg
+│       │   │   │   └── cover_4.jpg
+│       │   │   └── favicon.ico
 │       │   └── audio-processor.js
 │       ├── src
 │       │   ├── app
@@ -126,6 +121,7 @@
 │       │   ├── pages
 │       │   │   ├── AuthPage.tsx
 │       │   │   ├── HomePage.tsx
+│       │   │   ├── MainApplicationPage.tsx
 │       │   │   ├── WelcomePage.module.css
 │       │   │   └── WelcomePage.tsx
 │       │   ├── shared
@@ -141,16 +137,34 @@
 │       │   │   ├── store
 │       │   │   │   └── view.store.ts
 │       │   │   └── ui
-│       │   │       └── Layout.tsx
+│       │   │       ├── Layout.tsx
+│       │   │       ├── atoms
+│       │   │       │   ├── Button
+│       │   │       │   │   └── PlayButton.tsx
+│       │   │       │   ├── Layout
+│       │   │       │   │   └── Card.tsx
+│       │   │       │   ├── Media
+│       │   │       │   │   └── CoverImage.tsx
+│       │   │       │   └── Typography
+│       │   │       │       └── Heading.tsx
+│       │   │       └── molecules
+│       │   │           ├── Content
+│       │   │           │   ├── HeroContent.tsx
+│       │   │           │   └── MediaInfo.tsx
+│       │   │           └── MediaCard
+│       │   │               └── AlbumCard.tsx
 │       │   └── widgets
 │       │       ├── BottomNavBar
 │       │       │   └── BottomNavBar.tsx
-│       │       ├── GlobalPlayer
-│       │       ├── player
-│       │       │   ├── NowPlayingSidebar.tsx
-│       │       │   └── Player.tsx
-│       │       └── playlist-sidebar
-│       │           └── PlaylistSidebar.tsx
+│       │       ├── HomeScreen
+│       │       │   ├── ContentSections
+│       │       │   │   └── AlbumsSection.tsx
+│       │       │   ├── HeroSection
+│       │       │   │   └── HeroSection.tsx
+│       │       │   └── HomeScreen.tsx
+│       │       ├── PlaylistSidebar
+│       │       │   └── PlaylistSidebar.tsx
+│       │       └── player
 │       ├── tailwind.config.js
 │       ├── tsconfig.json
 │       └── vite.config.ts
@@ -167,4 +181,4 @@
         └── src
             └── main.rs
 
-60 directories, 108 files
+71 directories, 111 files

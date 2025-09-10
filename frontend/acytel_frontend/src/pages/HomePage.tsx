@@ -1,85 +1,74 @@
-// File: src/pages/HomePage.tsx (Fortified)
-import { Component, For } from 'solid-js';
+import { Component, createSignal, onMount } from 'solid-js';
+import { HomeScreen } from '../widgets/HomeScreen/HomeScreen';
 
-// --- Custom SVG Icon for the Play Button ---
-const IconPlayLibkt = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5"/>
-        <path d="M10 8L15 12L10 16V8Z" fill="white"/>
-    </svg>
-);
-
-// --- The Main Header Component ---
-const AlbumHeader: Component = () => {
-    const artistImageUrl = '/assets/album_header_bg.png';
-    return (
-        <div 
-            class="relative h-96 w-full rounded-2xl bg-cover overflow-hidden flex items-end p-8"
-            style={{ 
-                "background-image": `url(${artistImageUrl})`,
-                "background-position": "calc(50% + 7cm) calc(50% + 2.4cm)" 
-            }}
-        >
-            <div class="absolute inset-0 bg-gradient-to-t from-background/80 via-background/40 to-transparent"></div>
-            <div class="relative z-10 flex flex-col gap-4">
-                <div>
-                    <h1 class="text-7xl font-bold text-primary-text -translate-y-10">Acytel</h1>
-                    <p class="text-sm text-secondary-text mt-2">Hindi</p>
-                </div>
-                <p class="max-w-xl text-sm text-secondary-text">
-                    Toene: a s"euth sunt a stto years, teupa de enon menm acoef en nnt* afmenalen onreenan O. 
-                    Epio am loopelansivu poc Abce. bneket onco e.
-                </p>
-                <button class="flex items-center gap-3 bg-white/10 hover:bg-white/20 transition-colors w-max px-6 py-2 rounded-full text-primary-text font-bold">
-                    Listen Now
-                    <IconPlayLibkt />
-                </button>
-            </div>
-        </div>
-    );
-}
-
-// --- Album Card Sub-Component ---
-const AlbumCard = (props: { item: { coverUrl: string; title: string; artist: string; } }) => {
-    return (
-        <div class="bg-surface/50 p-4 rounded-lg flex flex-col gap-4 cursor-pointer hover:bg-surface transition-colors">
-            <img src={props.item.coverUrl} alt={props.item.title} class="w-full aspect-square rounded-md" />
-            <div>
-                <p class="font-bold text-primary-text truncate">{props.item.title}</p>
-                <p class="text-sm text-secondary-text truncate">{props.item.artist}</p>
-            </div>
-        </div>
-    )
-}
-
-// --- The Album Grid Component (Fortified) ---
-const AlbumGrid: Component = () => {
-    // Directive: Data paths updated to use local, reliable assets.
-    const albums = [
-        { coverUrl: '/assets/albums/cover_1.jpg', title: 'Jea Lak Up', artist: 'Churerlia tebat' },
-        { coverUrl: '/assets/albums/cover_2.jpg', title: 'Frepe Fxas', artist: 'Guomas' },
-        { coverUrl: '/assets/albums/cover_3.jpg', title: 'That\'s Auring', artist: 'Guomas' },
-        { coverUrl: '/assets/albums/cover_4.jpg', title: 'Latk Senmery Se', artist: 'Ruqwear ycord' },
-    ];
-
-    return (
-        <div>
-            <h2 class="text-2xl font-bold text-primary-text mb-4">Top Albums</h2>
-            <div class="grid grid-cols-4 gap-6">
-                <For each={albums}>
-                    {(album) => <AlbumCard item={album} />}
-                </For>
-            </div>
-        </div>
-    )
-}
-
-// --- The Exported HomePage Component ---
 export const HomePage: Component = () => {
+  const [pageLoading, setPageLoading] = createSignal(true);
+  const [audioInitialized, setAudioInitialized] = createSignal(false);
+
+  const initializeAudio = async () => {
+    try {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      setAudioInitialized(true);
+      console.log('🎵 Audio service initialized');
+    } catch (error) {
+      console.warn('Audio initialization failed:', error);
+      setAudioInitialized(false);
+    }
+  };
+
+  const handleHeroPlay = () => {
+    console.log('🎵 Playing hero content: Acytel');
+  };
+
+  const handleAlbumClick = (albumId: string | number) => {
+    console.log(`📀 Navigating to album: ${albumId}`);
+  };
+
+  const handlePlayAlbum = (albumId: string | number) => {
+    console.log(`🎵 Playing album: ${albumId}`);
+  };
+
+  onMount(async () => {
+    await initializeAudio();
+    setTimeout(() => {
+      setPageLoading(false);
+      console.log('🏠 HomePage fully loaded - Universe No. 1 achieved!');
+    }, 100);
+  });
+
   return (
-    <div class="flex flex-col gap-8">
-        <AlbumHeader />
-        <AlbumGrid />
+    <div class="relative min-h-screen">
+      {pageLoading() && (
+        <div class="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div class="flex flex-col items-center gap-4">
+            <div class="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-sm text-secondary-text">Loading universe no. 1...</p>
+          </div>
+        </div>
+      )}
+
+      <HomeScreen 
+        loading={pageLoading()}
+        onPlayHero={handleHeroPlay}
+        onAlbumClick={handleAlbumClick}
+        onPlayAlbum={handlePlayAlbum}
+      />
+
+      <div class="fixed bottom-20 right-4 z-40">
+        <div class={`
+          px-3 py-1 rounded-full text-xs transition-all duration-300
+          ${audioInitialized() 
+            ? 'bg-accent/20 text-accent border border-accent/30' 
+            : 'bg-muted/20 text-muted border border-muted/30'
+          }
+        `}>
+          {audioInitialized() ? '🎵 Audio Ready' : '🔇 Audio Loading'}
+        </div>
+      </div>
+
+      <div class="fixed bottom-4 left-4 text-xs text-muted/50 z-40 select-none">
+        Universe No. 1 • Sona Forge Master
+      </div>
     </div>
   );
 };
