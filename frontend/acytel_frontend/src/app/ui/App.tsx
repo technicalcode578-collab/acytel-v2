@@ -1,4 +1,4 @@
-// File: src/app/ui/App.tsx (Corrected)
+// File: /workspaces/acytel-v2/frontend/acytel_frontend/src/app/ui/App.tsx
 import type { Component } from 'solid-js';
 import { AppRouter } from '../providers/router';
 

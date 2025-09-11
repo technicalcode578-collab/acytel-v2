@@ -8,7 +8,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        'background': '#0B0D13',
+        'background': '#101010',
         'surface': '#1A1C25',
         // Directive: Accent color refined to match the blueprint's deep blue.
         'accent': '#313B6B', 

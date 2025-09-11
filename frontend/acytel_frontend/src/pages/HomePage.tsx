@@ -1,3 +1,4 @@
+///workspaces/acytel-v2/frontend/acytel_frontend/src/pages/HomePage.tsx
 import { Component, createSignal, onMount } from 'solid-js';
 import { HomeScreen } from '../widgets/HomeScreen/HomeScreen';
 
@@ -54,21 +55,9 @@ export const HomePage: Component = () => {
         onPlayAlbum={handlePlayAlbum}
       />
 
-      <div class="fixed bottom-20 right-4 z-40">
-        <div class={`
-          px-3 py-1 rounded-full text-xs transition-all duration-300
-          ${audioInitialized() 
-            ? 'bg-accent/20 text-accent border border-accent/30' 
-            : 'bg-muted/20 text-muted border border-muted/30'
-          }
-        `}>
-          {audioInitialized() ? '🎵 Audio Ready' : '🔇 Audio Loading'}
-        </div>
-      </div>
+      
 
-      <div class="fixed bottom-4 left-4 text-xs text-muted/50 z-40 select-none">
-        Universe No. 1 • Sona Forge Master
-      </div>
+       
     </div>
   );
 };

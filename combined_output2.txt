@@ -1,0 +1,589 @@
+// File: src/widgets/BottomNavBar/BottomNavBar.tsx (Corrected)
+import { Component } from 'solid-js';
+import { useNavigate, useLocation } from '@solidjs/router';
+import { FiHome, FiSearch, FiSettings } from 'solid-icons/fi';
+import { CgMathPlus } from 'solid-icons/cg';
+import { IoLibraryOutline } from 'solid-icons/io';
+
+const NavIcon = (props: { 
+  label: string; 
+  children: any; 
+  href: string;
+  isCentral?: boolean 
+}) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  const isActive = location.pathname === props.href;
+  
+  const handleClick = () => {
+    navigate(props.href);
+  };
+  
+  const baseClass = "flex flex-col items-center justify-center transition-colors w-16 cursor-pointer";
+  const centralClass = props.isCentral ? "h-8 w-8" : "h-6 w-6";
+  const textColor = isActive ? "text-primary-text" : "text-muted hover:text-primary-text";
+  
+  return (
+    <button 
+      onClick={handleClick} 
+      class={`${baseClass} ${textColor}`}
+    >
+      <div class={centralClass}>{props.children}</div>
+    </button>
+  );
+};
+
+export const BottomNavBar: Component = () => {
+  return (
+    <nav class="w-full h-[60px] bg-background flex items-center justify-around">
+      <NavIcon label="Home" href="/"><FiHome /></NavIcon>
+      <NavIcon label="Search" href="/search"><FiSearch /></NavIcon>
+      <NavIcon label="Create" href="/create" isCentral={true}><CgMathPlus /></NavIcon>
+      {/* Directive: Corrected the typo from 'LNavIcon' to 'NavIcon'. */}
+      <NavIcon label="Library" href="/library"><IoLibraryOutline /></NavIcon>
+      <NavIcon label="Settings" href="/settings"><FiSettings /></NavIcon>
+    </nav>
+  );
+};import { Component, For, Show } from 'solid-js';
+import { NowPlaying } from '../player/NowPlaying'; // Import the new component
+
+// --- Custom SVG Icon Components (Playlist specific) ---
+
+const IconPulsingWave = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="10" stroke="white" stroke-opacity="0.5" stroke-width="1.5"/>
+    <circle cx="12" cy="12" r="5" fill="white"/>
+  </svg>
+);
+
+const IconCircularPlay = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="11" stroke="white" stroke-width="1.5"/>
+    <path d="M10 8L15 12L10 16V8Z" fill="white"/>
+  </svg>
+);
+
+const IconDelicateChevron = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 17L15 12L10 7" stroke="#A0AEC0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+);
+
+
+// --- Data Structures ---
+const placeholderPlaylists = [
+  { id: 1, title: 'New Or Mж', artist: 'Goll', avatar: 'https://i.pravatar.cc/40?img=1', active: false },
+  { id: 2, title: 'Ploans are Eco', artist: 'Birardre', avatar: 'https://i.pravatar.cc/40?img=2', active: true },
+  { id: 3, title: 'We Don\'t Tab Aburq!', artist: 'Umaind Inam', avatar: 'https://i.pravatar.cc/40?img=3', active: false },
+  { id: 4, title: 'Dlãy', artist: 'Humi Itrgoos', avatar: 'https://i.pravatar.cc/40?img=4', active: false },
+  { id: 5, title: 'Staver Fionhin', artist: '#alld torfir', avatar: 'https://i.pravatar.cc/40?img=5', active: false },
+];
+
+
+// --- Sub-Components ---
+
+const PlaylistItem = (props: { item: typeof placeholderPlaylists[0] }) => {
+  const baseClasses = "flex items-center p-2 rounded-lg cursor-pointer transition-colors";
+  const activeClasses = props.item.active ? "bg-accent" : "hover:bg-surface/50";
+
+  return (
+    <div class={`${baseClasses} ${activeClasses}`}>
+      <div class="w-10 h-10 mr-4 flex items-center justify-center flex-shrink-0">
+        <Show 
+          when={props.item.active} 
+          fallback={<img src={props.item.avatar} alt={props.item.title} class="w-10 h-10 rounded-full" />}
+        >
+          <IconPulsingWave />
+        </Show>
+      </div>
+      <div class="flex-grow">
+        <p class="font-bold text-primary-text text-sm tracking-tight">{props.item.title}</p>
+        <p class={`text-xs ${props.item.active ? 'text-secondary-text' : 'text-muted'}`}>{props.item.artist}</p>
+      </div>
+      <div class="flex-shrink-0">
+        {props.item.active ? <IconCircularPlay /> : <IconDelicateChevron />}
+      </div>
+    </div>
+  );
+};
+
+
+// --- Main Exported Component ---
+
+export const PlaylistSidebar: Component = () => {
+  return (
+    <div class="p-4 h-full flex flex-col gap-4">
+      <div>
+        <h2 class="text-xl font-bold text-primary-text mb-4">Playlist</h2>
+        <div class="flex flex-col gap-1">
+          <For each={placeholderPlaylists}>
+            {(item) => <PlaylistItem item={item} />}
+          </For>
+        </div>
+      </div>
+      <div class="flex-grow"></div>
+      <NowPlaying />
+    </div>
+  );
+};import { Component } from 'solid-js';
+
+// --- SVG Icon Components for the Player ---
+
+const IconPlayerPrevious = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+    <path d="M18 17L11 12.5V17H9V7H11V11.5L18 7V17Z"/>
+  </svg>
+);
+
+const IconPlayerPause = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+    <path d="M9 7H11V17H9V7ZM13 7H15V17H13V7Z"/>
+  </svg>
+);
+
+const IconPlayerNext = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+    <path d="M6 7L13 11.5V7H15V17H13V12.5L6 17V7Z"/>
+  </svg>
+);
+
+const IconStylizedMusicNote = () => (
+    <svg width="32" height="32" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M24.0002 42.0001V12.0001L42.0002 6.00009V36.0001" stroke="#A0AEC0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M18.0002 36.0001C21.3139 36.0001 24.0002 33.3138 24.0002 30.0001C24.0002 26.6864 21.3139 24.0001 18.0002 24.0001C14.6865 24.0001 12.0002 26.6864 12.0002 30.0001C12.0002 33.3138 14.6865 36.0001 18.0002 36.0001Z" fill="#1A1C25" stroke="#A0AEC0" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M36.0002 30.0001C39.3139 30.0001 42.0002 27.3138 42.0002 24.0001C42.0002 20.6864 39.3139 18.0001 36.0002 18.0001C32.6865 18.0001 30.0002 20.6864 30.0002 24.0001C30.0002 27.3138 32.6865 30.0001 36.0002 30.0001Z" fill="#1A1C25" stroke="#A0AEC0" stroke-width="3" stroke-linejoin="round"/>
+    </svg>
+);
+
+// --- Main Exported Component ---
+
+export const NowPlaying: Component = () => {
+  return (
+    <div class="bg-surface rounded-lg p-3 flex flex-col gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-14 h-14 bg-background/50 backdrop-blur-sm rounded-md flex items-center justify-center flex-shrink-0">
+          <IconStylizedMusicNote />
+        </div>
+        <div class="flex-grow">
+          <p class="font-bold text-primary-text">Khariyat</p>
+          <p class="text-sm text-secondary-text -mt-1">Rio y entvro</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-center gap-6">
+        <button class="text-primary-text transition-opacity hover:opacity-75"><IconPlayerPrevious /></button>
+        <button class="text-primary-text transition-opacity hover:opacity-75"><IconPlayerPause /></button>
+        <button class="text-primary-text transition-opacity hover:opacity-75"><IconPlayerNext /></button>
+      </div>
+    </div>
+  );
+};import { Component, createSignal, onMount } from 'solid-js';
+import { HeroSection } from './HeroSection/HeroSection';
+import { AlbumsSection } from './ContentSections/AlbumsSection';
+
+interface HomeScreenProps {
+  loading?: boolean;
+  onPlayHero?: () => void;
+  onAlbumClick?: (albumId: string | number) => void;
+  onPlayAlbum?: (albumId: string | number) => void;
+}
+
+const HERO_DATA = {
+  title: 'Acytel',
+  subtitle: 'Hindi',
+  description: 'Toene: a s"euth sunt a stto years, teupa de enon menm acoef en nnt* afmenalen onreenan O. Epio am loopelansivu poc Abce. bneket onco e.',
+  backgroundImage: '/assets/album_header_bg.png',
+  backgroundPosition: 'calc(50% + 7cm) calc(50% + 2.4cm)'
+};
+
+const ALBUMS_DATA = [
+  { id: 1, title: 'Jea Lak Up', artist: 'Churerlia tebat', coverUrl: '/assets/albums/cover_1.jpg', year: 2024, trackCount: 12 },
+  { id: 2, title: 'Frepe Fxas', artist: 'Guomas', coverUrl: '/assets/albums/cover_2.jpg', year: 2023, trackCount: 8 },
+  { id: 3, title: 'That\'s Auring', artist: 'Guomas', coverUrl: '/assets/albums/cover_3.jpg', year: 2023, trackCount: 10 },
+  { id: 4, title: 'Latk Senmery Se', artist: 'Ruqwear ycord', coverUrl: '/assets/albums/cover_4.jpg', year: 2024, trackCount: 15 }
+];
+
+export const HomeScreen: Component<HomeScreenProps> = (props) => {
+  const [isLoaded, setIsLoaded] = createSignal(false);
+
+  const isLoading = () => props.loading || !isLoaded();
+
+  const handleHeroPlay = () => {
+    console.log('Playing hero content: Acytel');
+    if (props.onPlayHero) {
+      props.onPlayHero();
+    }
+  };
+
+  const handleAlbumClick = (albumId: string | number) => {
+    console.log(`Navigating to album: ${albumId}`);
+    if (props.onAlbumClick) {
+      props.onAlbumClick(albumId);
+    }
+  };
+
+  const handlePlayAlbum = (albumId: string | number) => {
+    console.log(`Playing album: ${albumId}`);
+    if (props.onPlayAlbum) {
+      props.onPlayAlbum(albumId);
+    }
+  };
+
+  onMount(() => {
+    setTimeout(() => setIsLoaded(true), 100);
+  });
+
+  return (
+    <div class="flex flex-col gap-8 relative">
+      {/* Hero Section - Universe No. 1 Architecture */}
+      <HeroSection 
+        title={HERO_DATA.title}
+        subtitle={HERO_DATA.subtitle}
+        description={HERO_DATA.description}
+        backgroundImage={HERO_DATA.backgroundImage}
+        backgroundPosition={HERO_DATA.backgroundPosition}
+        loading={isLoading()}
+        onPlayClick={handleHeroPlay}
+      />
+
+      {/* Albums Section - Universe No. 1 Architecture */}
+      <AlbumsSection 
+        title="Top Albums"
+        subtitle="Discover the most popular albums"
+        albums={ALBUMS_DATA}
+        columns={4}
+        showMeta={true}
+        loading={isLoading()}
+        onAlbumClick={handleAlbumClick}
+        onPlayAlbum={handlePlayAlbum}
+        onViewAllClick={() => console.log('View all albums')}
+      />
+    </div>
+  );
+};// File: src/widgets/HomeScreen/ContentSections/AlbumsSection.tsx
+import { Component, For, createSignal, onMount, Show } from 'solid-js';
+import { AlbumCard } from '../../../shared/ui/molecules/MediaCard/AlbumCard';
+import { Heading } from '../../../shared/ui/atoms/Typography/Heading';
+
+// --- Types ---
+interface Album {
+  id: string | number;
+  title: string;
+  artist: string;
+  coverUrl: string;
+  year?: string | number;
+  trackCount?: number;
+}
+
+interface AlbumsSectionProps {
+  title?: string;
+  subtitle?: string;
+  albums: Album[];
+  columns?: 2 | 3 | 4 | 5 | 6;
+  showMeta?: boolean;
+  loading?: boolean;
+  loadingCount?: number;
+  viewAllHref?: string;
+  onAlbumClick?: (albumId: string | number) => void;
+  onPlayAlbum?: (albumId: string | number) => void;
+  onViewAllClick?: () => void;
+}
+
+// --- Grid Configuration ---
+const gridStyles = {
+  2: 'grid-cols-2',
+  3: 'grid-cols-3',
+  4: 'grid-cols-4',
+  5: 'grid-cols-5',
+  6: 'grid-cols-6'
+};
+
+const responsiveGridStyles = {
+  2: 'grid-cols-1 sm:grid-cols-2',
+  3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+  4: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4',
+  5: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
+  6: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
+};
+
+// --- Section Header Component ---
+const SectionHeader: Component<{
+  title: string;
+  subtitle?: string;
+  viewAllHref?: string;
+  onViewAllClick?: () => void;
+}> = (props) => {
+  const handleViewAllClick = (e: MouseEvent) => {
+    e.preventDefault();
+    if (props.onViewAllClick) {
+      props.onViewAllClick();
+    }
+  };
+
+  return (
+    <div class="flex items-end justify-between mb-6">
+      <div class="space-y-1">
+        <Heading level="h2" color="primary" class="tracking-tight">
+          {props.title}
+        </Heading>
+        {props.subtitle && (
+          <Heading level="h4" color="secondary" weight="medium">
+            {props.subtitle}
+          </Heading>
+        )}
+      </div>
+      
+      {(props.viewAllHref || props.onViewAllClick) && (
+        <button
+          onClick={handleViewAllClick}
+          class="flex items-center gap-2 text-sm text-secondary-text hover:text-primary-text transition-colors group"
+        >
+          View All
+          <svg 
+            width="16" 
+            height="16" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            class="transition-transform group-hover:translate-x-1"
+          >
+            <path 
+              d="M10 17L15 12L10 7" 
+              stroke="currentColor" 
+              stroke-width="2" 
+              stroke-linecap="round" 
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+};
+
+// --- Loading Grid Component ---
+const LoadingGrid: Component<{ 
+  columns: number; 
+  count: number 
+}> = (props) => {
+  const skeletonItems = Array.from({ length: props.count }, (_, i) => i);
+
+  return (
+    <div class={`grid gap-6 ${responsiveGridStyles[props.columns as keyof typeof responsiveGridStyles]}`}>
+      <For each={skeletonItems}>
+        {() => (
+          <div class="bg-surface/30 rounded-lg p-4 animate-pulse">
+            <div class="aspect-square bg-surface/50 rounded-md mb-4"></div>
+            <div class="h-4 bg-surface/50 rounded mb-2 w-3/4"></div>
+            <div class="h-3 bg-surface/50 rounded w-1/2"></div>
+          </div>
+        )}
+      </For>
+    </div>
+  );
+};
+
+// --- Empty State Component ---
+const EmptyState: Component<{ 
+  title?: string;
+  message?: string;
+}> = (props) => (
+  <div class="flex flex-col items-center justify-center py-16 text-center">
+    <div class="w-16 h-16 mb-4 rounded-full bg-surface/50 flex items-center justify-center">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" class="text-muted">
+        <path 
+          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+          fill="currentColor"
+        />
+      </svg>
+    </div>
+    <Heading level="h3" color="muted" class="mb-2">
+      {props.title || 'No Albums Found'}
+    </Heading>
+    <p class="text-sm text-muted max-w-md">
+      {props.message || 'There are no albums to display at the moment. Check back later for new content.'}
+    </p>
+  </div>
+);
+
+// --- Intersection Observer Hook for Animations ---
+const useIntersectionObserver = () => {
+  const [isVisible, setIsVisible] = createSignal(false);
+  let elementRef: HTMLElement | undefined;
+
+  onMount(() => {
+    if (!elementRef) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.1, rootMargin: '50px' }
+    );
+
+    observer.observe(elementRef);
+
+    return () => observer.disconnect();
+  });
+
+  return { 
+    isVisible, 
+    elementRef: (el: HTMLElement) => {
+      elementRef = el;
+    }
+  };
+};
+
+// --- Main Albums Section Component ---
+export const AlbumsSection: Component<AlbumsSectionProps> = (props) => {
+  const columns = () => props.columns || 4;
+  const title = () => props.title || 'Albums';
+  const loadingCount = () => props.loadingCount || 8;
+  const showMeta = () => props.showMeta ?? false;
+  
+  const { isVisible, elementRef } = useIntersectionObserver();
+
+  const handleAlbumClick = (albumId: string | number) => {
+    if (props.onAlbumClick) {
+      props.onAlbumClick(albumId);
+    }
+  };
+
+  const handlePlayAlbum = (albumId: string | number) => {
+    if (props.onPlayAlbum) {
+      props.onPlayAlbum(albumId);
+    }
+  };
+
+  return (
+    <section 
+      ref={elementRef}
+      class={`
+        transition-all duration-700 ease-out
+        ${isVisible() ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
+      `}
+    >
+      {/* Section Header */}
+      <SectionHeader 
+        title={title()}
+        subtitle={props.subtitle}
+        viewAllHref={props.viewAllHref}
+        onViewAllClick={props.onViewAllClick}
+      />
+
+      {/* Content */}
+      <Show
+        when={!props.loading}
+        fallback={<LoadingGrid columns={columns()} count={loadingCount()} />}
+      >
+        <Show
+          when={props.albums && props.albums.length > 0}
+          fallback={<EmptyState />}
+        >
+          <div 
+            class={`
+              grid gap-6 
+              ${responsiveGridStyles[columns() as keyof typeof responsiveGridStyles]}
+            `}
+          >
+            <For each={props.albums}>
+              {(album, index) => (
+                <div 
+                  class={`
+                    transition-all duration-500 ease-out
+                    ${isVisible() ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
+                  `}
+                  style={{ 'transition-delay': `${index() * 100}ms` }}
+                >
+                  <AlbumCard 
+                    album={album}
+                    size="md"
+                    showMeta={showMeta()}
+                    onClick={handleAlbumClick}
+                    onPlayClick={handlePlayAlbum}
+                  />
+                </div>
+              )}
+            </For>
+          </div>
+        </Show>
+      </Show>
+    </section>
+  );
+};// File: src/widgets/HomeScreen/HeroSection/HeroSection.tsx
+import { Component, createSignal, Show } from 'solid-js';
+
+interface HeroSectionProps {
+  title: string;
+  subtitle?: string;
+  description?: string;
+  backgroundImage: string;
+  backgroundPosition?: string;
+  onPlayClick?: () => void;
+  loading?: boolean;
+}
+
+export const HeroSection: Component<HeroSectionProps> = (props) => {
+  const [isPlaying, setIsPlaying] = createSignal(false);
+
+  const handlePlayClick = () => {
+    setIsPlaying(true);
+    if (props.onPlayClick) {
+      props.onPlayClick();
+    }
+    setTimeout(() => setIsPlaying(false), 2000); // Reset after 2s
+  };
+
+  return (
+    <Show
+      when={!props.loading}
+      fallback={
+        <div class="h-96 bg-surface/30 rounded-2xl animate-pulse flex items-end p-8">
+          <div class="space-y-4">
+            <div class="h-16 bg-white/10 rounded w-3/4"></div>
+            <div class="h-4 bg-white/10 rounded w-1/2"></div>
+            <div class="h-4 bg-white/10 rounded w-2/3"></div>
+            <div class="h-12 bg-white/10 rounded w-40"></div>
+          </div>
+        </div>
+      }
+    >
+      <div 
+        class="relative h-96 w-full rounded-2xl bg-cover overflow-hidden flex items-end p-8 transition-opacity duration-500 ease-in-out opacity-100"
+        style={{ 
+          "background-image": `url(${props.backgroundImage})`,
+          "background-position": props.backgroundPosition || "center" 
+        }}
+      >
+        <div class="absolute inset-0 bg-gradient-to-t from-background/80 via-background/40 to-transparent"></div>
+        <div class="relative z-10 flex flex-col gap-4">
+          <div>
+            <h1 class="text-7xl font-bold text-primary-text -translate-y-10">{props.title}</h1>
+            {props.subtitle && <p class="text-sm text-secondary-text mt-2">{props.subtitle}</p>}
+          </div>
+          {props.description && (
+            <p class="max-w-xl text-sm text-secondary-text">{props.description}</p>
+          )}
+          <button 
+            onClick={handlePlayClick}
+            class={`
+              flex items-center gap-3 transition-all duration-300 w-max px-6 py-2 rounded-full font-bold transform hover:scale-105
+              ${isPlaying() 
+                ? 'bg-accent text-primary-text' 
+                : 'bg-white/10 hover:bg-white/20 text-primary-text'
+              }
+            `}
+          >
+            {isPlaying() ? 'Playing...' : 'Listen Now'}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5"/>
+              <path d="M10 8L15 12L10 16V8Z" fill="white"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </Show>
+  );
+};

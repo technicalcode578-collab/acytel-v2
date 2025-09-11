@@ -1,4 +1,4 @@
-// File: src/pages/MainApplicationPage.tsx (Corrected)
+// File: /workspaces/acytel-v2/frontend/acytel_frontend/src/pages/MainApplicationPage.tsx
 import { JSX } from 'solid-js';
 import Layout from '../shared/ui/Layout';
 
