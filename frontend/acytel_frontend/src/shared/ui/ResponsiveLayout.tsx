@@ -1,4 +1,4 @@
-// File: src/shared/ui/Layout.tsx
+// File: src/shared/ui/ResponsiveLayout.tsx
 import { JSX, createSignal, onMount, onCleanup, Show, Component } from 'solid-js';
 import { BottomNavBar } from '../../widgets/BottomNavBar/BottomNavBar';
 import { PlaylistSidebar } from '../../widgets/PlaylistSidebar/PlaylistSidebar';
@@ -110,7 +110,7 @@ const DesktopSidebar: Component = () => {
 };
 
 // Main Responsive Layout
-export default function Layout(props: { children: JSX.Element }) {
+export default function ResponsiveLayout(props: { children: JSX.Element }) {
   const { isMobile, isTablet, isDesktop, sidebarOpen, setSidebarOpen } = useBreakpoint();
 
   const getMainContentClass = () => {

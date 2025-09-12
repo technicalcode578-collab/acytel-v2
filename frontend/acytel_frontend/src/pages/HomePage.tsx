@@ -1,6 +1,5 @@
-///workspaces/acytel-v2/frontend/acytel_frontend/src/pages/HomePage.tsx
 import { Component, createSignal, onMount } from 'solid-js';
-import { HomeScreen } from '../widgets/HomeScreen/HomeScreen';
+import { ResponsiveHomeScreen } from '../widgets/HomeScreen/ResponsiveHomeScreen';
 
 export const HomePage: Component = () => {
   const [pageLoading, setPageLoading] = createSignal(true);
@@ -48,16 +47,8 @@ export const HomePage: Component = () => {
         </div>
       )}
 
-      <HomeScreen 
-        loading={pageLoading()}
-        onPlayHero={handleHeroPlay}
-        onAlbumClick={handleAlbumClick}
-        onPlayAlbum={handlePlayAlbum}
-      />
+      <ResponsiveHomeScreen />
 
-      
-
-       
     </div>
   );
 };

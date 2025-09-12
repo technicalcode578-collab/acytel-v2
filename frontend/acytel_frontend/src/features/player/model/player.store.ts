@@ -1,5 +1,5 @@
 // File: src/features/player/model/player.store.ts
-import { createSignal, createEffect } from "solid-js";
+import { createSignal, createEffect, createRoot } from "solid-js";
 import { Track } from "../../../entities/track/model/track.model";
 import * as AudioService from "../../../shared/lib/audio.service";
 import * as CacheService from "../../../shared/lib/cache.service";
@@ -12,20 +12,22 @@ const [currentTime, setCurrentTime] = createSignal(0);
 const [duration, setDuration] = createSignal(0);
 const [isSeekable, setIsSeekable] = createSignal(false);
 
-createEffect(() => {
-    let progressInterval: number;
-    if (isPlaying()) {
-        progressInterval = window.setInterval(() => {
-            const time = AudioService.getCurrentTime();
-            if (duration() > 0 && time <= duration()) {
-                setCurrentTime(time);
-            }
-            if (time >= duration() && duration() > 0) {
-                setIsPlaying(false);
-            }
-        }, 250);
-    }
-    return () => clearInterval(progressInterval);
+createRoot(() => {
+    createEffect(() => {
+        let progressInterval: number;
+        if (isPlaying()) {
+            progressInterval = window.setInterval(() => {
+                const time = AudioService.getCurrentTime();
+                if (duration() > 0 && time <= duration()) {
+                    setCurrentTime(time);
+                }
+                if (time >= duration() && duration() > 0) {
+                    setIsPlaying(false);
+                }
+            }, 250);
+        }
+        return () => clearInterval(progressInterval);
+    });
 });
 
 export const playerActions = {
