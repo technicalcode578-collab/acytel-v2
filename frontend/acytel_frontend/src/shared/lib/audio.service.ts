@@ -1,4 +1,4 @@
-// File: src/core/audio.service.ts
+// File: src/shared/lib/audio.service.ts
 import { getWasmModule } from './wasm-loader';
 
 interface DecodedAudio {

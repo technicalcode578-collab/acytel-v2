@@ -1,7 +1,8 @@
 import { Component, createSignal, onMount } from 'solid-js';
 import { ResponsiveHomeScreen } from '../widgets/HomeScreen/ResponsiveHomeScreen';
+import { UploadForm } from '../features/library/ui/UploadForm';
 
-export const HomePage: Component = () => {
+const HomePage: Component = () => {
   const [pageLoading, setPageLoading] = createSignal(true);
   const [audioInitialized, setAudioInitialized] = createSignal(false);
 
@@ -48,7 +49,8 @@ export const HomePage: Component = () => {
       )}
 
       <ResponsiveHomeScreen />
-
     </div>
   );
 };
+
+export default HomePage;

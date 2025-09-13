@@ -6,7 +6,7 @@ import GuestRoute from '../../features/auth/ui/GuestRoute';
 import MainApplicationPage from '../../pages/MainApplicationPage';
 
 // Import the HomePage to be used in the route definition.
-import { HomePage } from '../../pages/HomePage'; 
+import HomePage from '../../pages/HomePage'; 
 
 const WelcomePage = lazy(() => import('../../pages/WelcomePage').then(module => ({ default: module.WelcomePage })));
 const AuthPage = lazy(() => import('../../pages/AuthPage').then(module => ({ default: module.AuthPage })));

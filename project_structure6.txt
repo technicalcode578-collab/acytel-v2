@@ -110,7 +110,9 @@
 │       │   │   │   ├── model
 │       │   │   │   │   └── playlist.store.ts
 │       │   │   │   └── ui
-│       │   │   │       └── CreatePlaylistModal.tsx
+│       │   │   │       ├── AddToPlaylistModal.tsx
+│       │   │   │       ├── CreatePlaylistModal.tsx
+│       │   │   │       └── PlaylistView.tsx
 │       │   │   └── search
 │       │   │       ├── model
 │       │   │       │   └── search.store.ts
@@ -178,6 +180,8 @@
 ├── package-lock.json
 ├── package.json
 ├── project_structure.txt
+├── project_structure4.txt
+├── project_structure5.tx
 ├── project_structure6.txt
 ├── scripts
 │   └── migrations.cql
@@ -188,4 +192,4 @@
         └── src
             └── main.rs
 
-71 directories, 118 files
+71 directories, 122 files

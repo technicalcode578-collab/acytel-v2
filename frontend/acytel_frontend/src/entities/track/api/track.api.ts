@@ -1,6 +1,6 @@
-// File: src/features/library/api/track.service.ts
+// File: src/entities/track/api/track.api.ts
 import api from '../../../shared/api';
-import { Track } from '../../../shared/lib/track.model';
+import { Track } from '../model/track.model';
 
 export async function getTracks(): Promise<Track[]> {
     const response = await api.get('/tracks');
@@ -24,7 +24,7 @@ export async function getSecureTrackUrl(trackId: string): Promise<string> {
 }
 
 export async function searchTracks(query: string): Promise<Track[]> {
-    const response = await api.get('/tracks/search', { params: { q: query } });
+    const response = await api.get('/api/tracks/search', { params: { q: query } });
     return response.data.hits || [];
 }
 

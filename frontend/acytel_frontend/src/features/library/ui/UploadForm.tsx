@@ -1,12 +1,13 @@
 // File: src/features/library/ui/UploadForm.tsx
 import { createSignal, Component } from "solid-js";
-import { uploadTrack } from "../../../entities/track/api/track.api"; // CORRECTED
-import { libraryStore } from "../../../entities/track/model/track.store"; // CORRECTED
+import { uploadTrack } from "../../../entities/track/api/track.api";
+import { libraryStore } from "../../../entities/track/model/track.store";
 
 export const UploadForm: Component = () => {
     const [selectedFile, setSelectedFile] = createSignal<File | null>(null);
     const [loading, setLoading] = createSignal(false);
     const [error, setError] = createSignal("");
+    const [success, setSuccess] = createSignal("");
 
     const handleFileChange = (e: Event) => {
         const target = e.currentTarget as HTMLInputElement;
@@ -20,14 +21,26 @@ export const UploadForm: Component = () => {
         if (!selectedFile()) return;
         setLoading(true);
         setError("");
+        setSuccess("");
+        
+        console.log("[UploadForm] Starting upload for:", selectedFile()?.name);
+        
         try {
             const newTrack = await uploadTrack(selectedFile()!);
+            console.log("[UploadForm] Upload successful, received track:", newTrack);
+            
             libraryStore.addTrack(newTrack);
+            console.log("[UploadForm] Track added to store. Current track count:", libraryStore.tracks.length);
+            
             setSelectedFile(null); // Clear the input
+            setSuccess(`Successfully uploaded "${newTrack.title}"!`);
+            
             // Reset the file input visually
             const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
             if (fileInput) fileInput.value = "";
+            
         } catch (err) {
+            console.error("[UploadForm] Upload failed:", err);
             setError("Upload failed. Please try again.");
         } finally {
             setLoading(false);
@@ -44,6 +57,7 @@ export const UploadForm: Component = () => {
                 </button>
             </div>
             {error() && <p class="mt-2 text-sm text-red-400">{error()}</p>}
+            {success() && <p class="mt-2 text-sm text-green-400">{success()}</p>}
         </form>
     );
 };

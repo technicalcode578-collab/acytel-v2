@@ -139,7 +139,7 @@ export const BottomNavBar: Component = () => {
 
   return (
     <nav class={`
-      w-full h-16 sm:h-20 lg:h-[60px] 
+      w-full h-16 sm:h-20 lg:h-[44px] 
       bg-background/95 backdrop-blur-lg
       border-t border-surface/50
       flex items-center justify-around

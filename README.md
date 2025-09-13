@@ -116,7 +116,7 @@ If you have tracks in your database that were added before the search feature wa
 Run this command from the backend directory:
 
 npx tsx scripts/backfill-typesense.ts
-tree -I "node_modules|target|dist" > project_structure.txt
+t
 
 
 
@@ -189,7 +189,7 @@ cd ../../..
 # You should now be back in the root 'acytel' directory
 
 5. Set Up the Rust Streaming Service
-# Navigate to the Rust streamer service directory
+# Navigate to the Rust streamer service directorytree -I "node_modules|target|dist" > project_structure.tx
 cd services/streamer
 
 # This step will download dependencies and check the build
