@@ -117,6 +117,7 @@ Run this command from the backend directory:
 
 npx tsx scripts/backfill-typesense.ts
 t
+tree -I "node_modules|target|dist" > project_structure.txt
 
 
 
@@ -189,7 +190,7 @@ cd ../../..
 # You should now be back in the root 'acytel' directory
 
 5. Set Up the Rust Streaming Service
-# Navigate to the Rust streamer service directorytree -I "node_modules|target|dist" > project_structure.tx
+# Navigate to the Rust streamer service directory
 cd services/streamer
 
 # This step will download dependencies and check the build

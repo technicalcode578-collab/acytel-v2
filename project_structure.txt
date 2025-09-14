@@ -1,6 +1,7 @@
 .
 ├── README.md
 ├── backend
+│   ├── auth-errors.log
 │   ├── package-lock.json
 │   ├── package.json
 │   ├── scripts
@@ -99,8 +100,7 @@
 │       │   │   │       └── RegisterForm.tsx
 │       │   │   ├── library
 │       │   │   │   └── ui
-│       │   │   │       ├── TrackList.tsx
-│       │   │   │       └── UploadForm.tsx
+│       │   │   │       └── TrackList.tsx
 │       │   │   ├── player
 │       │   │   │   └── model
 │       │   │   │       └── player.store.ts
@@ -118,6 +118,7 @@
 │       │   │           ├── SearchBar.tsx
 │       │   │           └── SearchResults.tsx
 │       │   ├── pages
+│       │   │   ├── AddTrackPage.tsx
 │       │   │   ├── AuthPage.tsx
 │       │   │   ├── HomePage.tsx
 │       │   │   ├── MainApplicationPage.tsx
@@ -140,7 +141,6 @@
 │       │   │       ├── Layout.tsx
 │       │   │       ├── ResponsiveLayout.tsx
 │       │   │       ├── atoms
-│       │   │       │   ├── Button
 │       │   │       │   ├── Layout
 │       │   │       │   │   └── Card.tsx
 │       │   │       │   ├── Media
@@ -178,7 +178,6 @@
 ├── package-lock.json
 ├── package.json
 ├── project_structure.txt
-├── project_structure6.txt
 ├── scripts
 │   └── migrations.cql
 └── services
@@ -188,4 +187,4 @@
         └── src
             └── main.rs
 
-71 directories, 118 files
+70 directories, 118 files

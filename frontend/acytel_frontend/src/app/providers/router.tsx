@@ -7,6 +7,7 @@ import MainApplicationPage from '../../pages/MainApplicationPage';
 
 // Import the HomePage to be used in the route definition.
 import HomePage from '../../pages/HomePage'; 
+import AddTrackPage from '../../pages/AddTrackPage';
 
 const WelcomePage = lazy(() => import('../../pages/WelcomePage').then(module => ({ default: module.WelcomePage })));
 const AuthPage = lazy(() => import('../../pages/AuthPage').then(module => ({ default: module.AuthPage })));
@@ -30,7 +31,7 @@ export const AppRouter = () => {
                 
                 {/* Placeholder routes for other pages, to be implemented later. */}
                 <Route path="/search" component={() => <div>Search Page</div>} />
-                <Route path="/create" component={() => <div>Create Page</div>} />
+                <Route path="/create" component={AddTrackPage} />
                 <Route path="/library" component={() => <div>Library Page</div>} />
                 <Route path="/settings" component={() => <div>Settings Page</div>} />
             </Route>

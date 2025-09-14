@@ -14,37 +14,42 @@ const BUCKET_NAME = 'acytel-music';
 
 export async function uploadTrack(req: Request, res: Response) {
   try {
-    if (!req.file) {
+    const audioFile = req.file;
+
+    if (!audioFile) {
       return res.status(400).json({ message: 'No audio file was uploaded.' });
     }
     if (!req.user?.id) {
       return res.status(401).json({ message: 'Authentication error.' });
     }
-    const fileBuffer = req.file.buffer;
-    const fileExtension = req.file.originalname.split('.').pop() || 'mp3';
-    const storageKey = `${uuidv4()}.${fileExtension}`;
-    const uploadParams = {
+
+    // Upload audio file
+    const audioFileExtension = audioFile.originalname.split('.').pop() || 'mp3';
+    const audioStorageKey = `${uuidv4()}.${audioFileExtension}`;
+    const audioUploadParams = {
       Bucket: BUCKET_NAME,
-      Key: storageKey,
-      Body: fileBuffer,
-      ContentType: req.file.mimetype,
+      Key: audioStorageKey,
+      Body: audioFile.buffer,
+      ContentType: audioFile.mimetype,
     };
-    await s3Client.send(new PutObjectCommand(uploadParams));
-    const metadata = await mm.parseBuffer(fileBuffer, req.file.mimetype);
+    await s3Client.send(new PutObjectCommand(audioUploadParams));
+
+    const metadata = await mm.parseBuffer(audioFile.buffer, audioFile.mimetype);
     const common = metadata.common;
+    const { title, artist, album } = req.body;
     const trackId = uuidv4();
     const now = new Date();
-    const createdTrack: Track = { 
-        id: trackId, 
-        title: common.title || 'Untitled',
-        artist: common.artist || 'Unknown Artist',
-        album: common.album || 'Unknown Album',
+    const createdTrack: Track = {
+        id: trackId,
+        title: title || common.title || 'Untitled',
+        artist: artist || common.artist || 'Unknown Artist',
+        album: album || common.album || 'Unknown Album',
         durationInSeconds: Math.round(metadata.format.duration || 0),
-        storagePath: storageKey,
-        artworkPath: '',
+        storagePath: audioStorageKey,
+        artworkPath: '', // Reverted to empty string
         uploadedBy: req.user.id,
-        createdAt: now, 
-        updatedAt: now, 
+        createdAt: now,
+        updatedAt: now,
     };
     const insertQuery = `
         INSERT INTO acytel.tracks (id, title, artist, album, duration_in_seconds, storage_path, artwork_path, uploaded_by, created_at, updated_at)
@@ -52,8 +57,7 @@ export async function uploadTrack(req: Request, res: Response) {
     `;
     const params = [ createdTrack.id, createdTrack.title, createdTrack.artist, createdTrack.album, createdTrack.durationInSeconds, createdTrack.storagePath, createdTrack.artworkPath, createdTrack.uploadedBy, createdTrack.createdAt, createdTrack.updatedAt ];
     await dbClient.execute(insertQuery, params, { prepare: true });
-    
-    // Pass the correctly shaped object to the indexing function
+
     await indexTrack({
         id: createdTrack.id,
         title: createdTrack.title,

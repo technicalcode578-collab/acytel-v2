@@ -7,9 +7,18 @@ export async function getTracks(): Promise<Track[]> {
     return response.data;
 }
 
-export async function uploadTrack(file: File): Promise<Track> {
+export async function uploadTrack(file: File, metadata: { title?: string, artist?: string, album?: string }): Promise<Track> {
     const formData = new FormData();
     formData.append('audioFile', file);
+    if (metadata.title) {
+        formData.append('title', metadata.title);
+    }
+    if (metadata.artist) {
+        formData.append('artist', metadata.artist);
+    }
+    if (metadata.album) {
+        formData.append('album', metadata.album);
+    }
     const response = await api.post('/tracks/upload', formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
