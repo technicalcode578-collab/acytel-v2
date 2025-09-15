@@ -3,6 +3,7 @@ import { createSignal, Component } from "solid-js";
 import { Motion } from "solid-motion";
 import { register } from "../api/auth.service";
 import authStyles from './Auth.module.css';
+import { GoogleSignInButton } from './GoogleSignInButton';
 
 interface RegisterFormProps {
   onSwitchToLogin: () => void;
@@ -93,6 +94,19 @@ export const RegisterForm: Component<RegisterFormProps> = (props) => {
               </Motion>
             </div>
           </form>
+          <div class="mt-6">
+            <div class="relative">
+              <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-600" />
+              </div>
+              <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-gray-900 text-gray-400">Or continue with</span>
+              </div>
+            </div>
+            <div class="mt-6">
+              <GoogleSignInButton />
+            </div>
+          </div>
           <p class="mt-8 text-center text-sm text-gray-400">
             Already have an account?{' '}
             <button type="button" onClick={props.onSwitchToLogin} class="font-medium text-indigo-400 hover:text-indigo-300 transition">

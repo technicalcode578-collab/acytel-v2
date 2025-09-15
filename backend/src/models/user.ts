@@ -1,12 +1,20 @@
-/**
- * Represents the data structure for a User, mirroring the 'users' table
- * in the ScyllaDB database. This interface ensures type safety across the
- * application when handling user objects.
- */
 export interface User {
-  id: string; // Stored as UUID in the database
+  id: string;
   email: string;
-  hashed_password: string;
+  hashed_password?: string; // Optional for OAuth users
   created_at: Date;
   updated_at: Date;
+  
+  // OAuth fields
+  google_id?: string;
+  display_name?: string;
+  profile_picture?: string;
+  auth_provider: 'local' | 'google';
+}
+
+export interface GoogleUserProfile {
+  id: string;
+  email: string;
+  displayName: string;
+  photos?: Array<{ value: string }>;
 }

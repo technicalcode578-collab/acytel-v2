@@ -1,0 +1,235 @@
+]633;E;echo "// Contents of: backend/src/controllers/auth.controller.ts";c7f0b6e0-2584-40d3-8366-9bc953e6952b]633;C// Contents of: backend/src/controllers/auth.controller.ts
+import { Request, Response } from 'express';
+import { z } from 'zod';
+import bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
+import dbClient from '../core/database';
+import jwt from 'jsonwebtoken';
+
+// Define a schema for input validation using Zod.
+// This ensures the data we receive conforms to our expectations.
+const registerSchema = z.object({
+  email: z.string().email('Invalid email format.'),
+  password: z.string().min(8, 'Password must be at least 8 characters long.'),
+});
+
+export async function register(req: Request, res: Response) {
+  try {
+    // 1. Validate Input
+    const { email, password } = registerSchema.parse(req.body);
+
+    // 2. Check for Existing User
+    // We use a parameterized query to prevent CQL injection.
+    const existingUserQuery = 'SELECT email FROM acytel.users WHERE email = ? ALLOW FILTERING';
+    const existingUserResult = await dbClient.execute(existingUserQuery, [email], { prepare: true });
+
+    if (existingUserResult.rowLength > 0) {
+      // Use 409 Conflict status code for duplicate resource
+      return res.status(409).json({ message: 'An account with this email already exists.' });
+    }
+
+    // 3. Hash Password
+    // A salt round of 12 is a strong, recommended standard.
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // 4. Generate UUID
+    const userId = uuidv4();
+    const now = new Date();
+
+    // 5. Persist to Database
+    // Again, we use a parameterized query for security.
+    const insertQuery = 'INSERT INTO acytel.users (id, email, hashed_password, created_at, updated_at) VALUES (?, ?, ?, ?, ?)';
+    const params = [userId, email, hashedPassword, now, now];
+    await dbClient.execute(insertQuery, params, { prepare: true });
+
+    // 6. Return Success Response
+    return res.status(201).json({
+      message: 'User registered successfully.',
+      userId: userId,
+    });
+
+  } catch (error) {
+    // Handle validation errors from Zod
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ message: 'Invalid input.', issues: error.issues });
+    }
+    // Handle all other potential errors
+    console.error('Registration error:', error);
+    return res.status(500).json({ message: 'An internal server error occurred.' });
+  }
+}
+
+// Add this new login function after the existing register function
+export async function login(req: Request, res: Response) {
+  try {
+    // 1. Validate Input
+    const { email, password } = registerSchema.parse(req.body);
+
+    // 2. Find User by Email
+    const findUserQuery = 'SELECT id, email, hashed_password FROM acytel.users WHERE email = ? LIMIT 1 ALLOW FILTERING';
+    const userResult = await dbClient.execute(findUserQuery, [email], { prepare: true });
+    const user = userResult.first();
+
+    // 3. Handle "Not Found"
+    if (!user) {
+      // Return a generic 401 to prevent attackers from knowing which emails are registered
+      return res.status(401).json({ message: 'Invalid email or password.' });
+    }
+
+    // 4. Compare Passwords
+    const isPasswordValid = await bcrypt.compare(password, user.hashed_password);
+
+    // 5. Handle "Incorrect Password"
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Invalid email or password.' });
+    }
+
+    // 6. Generate JWT
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JwtSecretNotStored: JWT_SECRET is not defined in environment variables.');
+    }
+
+    const token = jwt.sign(
+      { userId: user.id.toString() }, // Payload
+      secret,                         // Secret Key
+      { expiresIn: '7d' }             // Options
+    );
+
+    // 7. Return Token
+    return res.status(200).json({ token });
+
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ message: 'Invalid input.', issues: error.issues });
+    }
+    console.error('Login error:', error);
+    return res.status(500).json({ message: 'An internal server error occurred.' });
+  }
+}\n\n// Contents of: backend/src/middleware/auth.middleware.ts
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+
+interface JwtPayload {
+  userId: string;
+}
+
+export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers['authorization'];
+  // The token is expected in the format "Bearer <TOKEN>"
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    // No token provided
+    return res.sendStatus(401); // Unauthorized
+  }
+
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    console.error('JWT Secret not found!');
+    return res.sendStatus(500); // Internal Server Error
+  }
+
+  try {
+    // Verify the token's signature and expiration
+    const decoded = jwt.verify(token, secret) as JwtPayload;
+    // Attach the user's ID to the request object for later use
+    req.user = { id: decoded.userId };
+    next(); // Token is valid, proceed to the next middleware or route handler
+  } catch (err) {
+    // Token is invalid (bad signature, expired, etc.)
+    return res.sendStatus(403); // Forbidden
+  }
+};
+// ... (existing authenticateToken function)
+
+export function verifyStreamToken(req: Request, res: Response, next: NextFunction) {
+  const token = req.query.token as string;
+
+  if (!token) {
+    return res.status(401).send('Unauthorized: No token provided.');
+  }
+
+  const secret = process.env.STREAM_TOKEN_SECRET;
+  if (!secret) {
+    console.error('Stream token secret is not configured!');
+    return res.sendStatus(500);
+  }
+
+  try {
+    // Verify the temporary token using the dedicated secret
+    const decoded = jwt.verify(token, secret);
+    // You could optionally attach the decoded payload to the request if needed
+    // req.streamPayload = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).send('Unauthorized: Invalid or expired token.');
+  }
+}\n\n// Contents of: backend/src/routes/auth.routes.ts
+import { Router } from 'express';
+import { register, login } from '../controllers/auth.controller';
+
+const router = Router();
+
+// Route for new user registration
+router.post('/register', register);
+
+// Route for existing user login
+router.post('/login', login);
+
+export default router;\n\n// Contents of: backend/src/models/user.ts
+/**
+ * Represents the data structure for a User, mirroring the 'users' table
+ * in the ScyllaDB database. This interface ensures type safety across the
+ * application when handling user objects.
+ */
+export interface User {
+  id: string; // Stored as UUID in the database
+  email: string;
+  hashed_password: string;
+  created_at: Date;
+  updated_at: Date;
+}\n\n// Contents of: backend/package.json
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.ts",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.864.0",
+    "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.0",
+    "cassandra-driver": "^4.8.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "dotenv-cli": "^10.0.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.2",
+    "music-metadata": "^11.8.2",
+    "typesense": "^2.0.3",
+    "uuid": "^11.1.0",
+    "zod": "^4.0.17"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cassandra-driver": "^4.2.4",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^24.3.0",
+    "@types/uuid": "^10.0.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}

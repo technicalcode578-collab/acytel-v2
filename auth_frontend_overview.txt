@@ -1,0 +1,494 @@
+]633;E;echo "// Contents of: frontend/acytel_frontend/src/features/auth/api/auth.service.ts";c7f0b6e0-2584-40d3-8366-9bc953e6952b]633;C// Contents of: frontend/acytel_frontend/src/features/auth/api/auth.service.ts
+// File: src/features/auth/api/auth.service.ts
+import api from '../../../shared/api';
+import { setToken } from '../model/auth.store';
+
+interface AuthCredentials {
+    email: string;
+    password: string;
+}
+
+export async function login(credentials: AuthCredentials) {
+    try {
+        const response = await api.post('/auth/login', credentials);
+        const token = response.data.token;
+        if (token) {
+            setToken(token);
+            console.log('Login successful, token stored.');
+        }
+        return response.data;
+    } catch (error) {
+        console.error('Login failed:', error);
+        throw error;
+    }
+}
+
+export async function register(credentials: AuthCredentials) {
+    try {
+        const response = await api.post('/auth/register', credentials);
+        return response.data;
+    } catch (error) {
+        console.error('Registration failed:', error);
+        throw error;
+    }
+}\n\n// Contents of: frontend/acytel_frontend/src/features/auth/model/auth.store.ts
+// File: src/features/auth/model/auth.store.ts
+import { createStore } from "solid-js/store";
+
+interface AuthState {
+  token: string | null;
+  isAuthenticated: boolean;
+}
+
+const [authState, setAuthState] = createStore<AuthState>({
+  token: localStorage.getItem("acytel_token"),
+  isAuthenticated: !!localStorage.getItem("acytel_token"),
+});
+
+export function setToken(token: string) {
+  localStorage.setItem("acytel_token", token);
+  setAuthState({
+    token: token,
+    isAuthenticated: true,
+  });
+}
+
+export function logout() {
+  localStorage.removeItem("acytel_token");
+  setAuthState({
+    token: null,
+    isAuthenticated: false,
+  });
+}
+
+export default authState;\n\n// Contents of: frontend/acytel_frontend/src/features/auth/ui/Auth.module.css
+/* frontend/acytel_frontend/src/features/auth/ui/Auth.module.css (FINAL) */
+
+/* === Existing Container & Gradient Border Styles (PRESERVED) === */
+.formWrapper {
+  position: relative;
+  border-radius: 0.75rem;
+  padding: 2px; /* For the gradient "border" */
+  overflow: hidden;
+  z-index: 10;
+  width: 100%;
+  max-width: 28rem;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+.formWrapper::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background: conic-gradient(from 180deg at 50% 50%, #4f46e5 0deg, #3b82f6 120deg, #14b8a6 240deg, #4f46e5 360deg);
+  z-index: -1;
+  filter: blur(20px);
+  animation: spin 5s linear infinite;
+}
+
+.formContent {
+  background-color: #111827; /* bg-gray-900 */
+  border-radius: 0.65rem; /* Slightly smaller radius for border visibility */
+  padding: 2.5rem;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* === Translated Element Styles (MERGED) === */
+.title {
+  text-align: center;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  color: #f3f4f6;
+  margin-bottom: 2rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+.input {
+  margin-top: 0.25rem;
+  appearance: none;
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #374151;
+  border-radius: 0.375rem;
+  background-color: #1f2937;
+  color: #ffffff;
+  transition: all 0.2s ease-in-out;
+}
+
+.input::placeholder {
+  color: #6b7280;
+}
+
+.input:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #4f46e5;
+  border-color: #4f46e5;
+}
+
+.errorText {
+  font-size: 0.875rem;
+  color: #f87171;
+  text-align: center;
+}
+
+.submitButton {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: #4f46e5;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.submitButton:hover {
+  background-color: #4338ca;
+}
+
+.submitButton:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #4f46e5;
+}
+
+.submitButton:disabled {
+  background-color: #4b5563;
+  cursor: not-allowed;
+}
+
+.switchText {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #9ca3af;
+}
+
+.switchButton {
+  font-weight: 500;
+  color: #818cf8;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+}
+
+.switchButton:hover {
+  color: #a5b4fc;
+}\n\n// Contents of: frontend/acytel_frontend/src/features/auth/ui/GuestRoute.tsx
+import { JSX } from 'solid-js';
+import { useNavigate } from '@solidjs/router';
+import authState from '../model/auth.store';
+
+export default function GuestRoute(props: { children: JSX.Element }) {
+  const navigate = useNavigate();
+  
+  if (authState.isAuthenticated) {
+    navigate('/', { replace: true });
+    return null;
+  }
+
+  return props.children;
+}\n\n// Contents of: frontend/acytel_frontend/src/features/auth/ui/LoginForm.tsx
+// frontend/acytel_frontend/src/features/auth/ui/LoginForm.tsx (FINAL)
+import { createSignal, Component } from "solid-js";
+import { useNavigate } from '@solidjs/router';
+import { Motion } from "solid-motion";
+import { login } from "../api/auth.service";
+import authStyles from './Auth.module.css';
+
+interface LoginFormProps {
+  onSwitchToRegister: () => void;
+}
+
+export const LoginForm: Component<LoginFormProps> = (props) => {
+  const navigate = useNavigate();
+  const [email, setEmail] = createSignal("");
+  const [password, setPassword] = createSignal("");
+  const [error, setError] = createSignal<string | null>(null);
+  const [loading, setLoading] = createSignal(false);
+
+  const handleSubmit = async (e: Event) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      await login({ email: email(), password: password() });
+      navigate('/', { replace: true });
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Invalid credentials. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div class={authStyles.formWrapper}>
+      <div class={authStyles.formContent}>
+        <h2 class={authStyles.title}>Sign In to Acytel</h2>
+        <form onSubmit={handleSubmit} class={authStyles.form}>
+          <div>
+            <label for="email" class={authStyles.label}>Email</label>
+            <input
+              id="email"
+              type="email"
+              required
+              value={email()}
+              onInput={(e) => setEmail(e.currentTarget.value)}
+              class={authStyles.input}
+              placeholder="you@example.com"
+            />
+          </div>
+          <div>
+            <label for="password" class={authStyles.label}>Password</label>
+            <input
+              id="password"
+              type="password"
+              required
+              value={password()}
+              onInput={(e) => setPassword(e.currentTarget.value)}
+              class={authStyles.input}
+              placeholder="••••••••"
+            />
+          </div>
+          <Motion component="div" initial={{ opacity: 0 }} animate={{ opacity: error() ? 1 : 0 }} transition={{ duration: 0.3 }}>
+            {error() && <p class={authStyles.errorText}>{error()}</p>}
+          </Motion>
+          <div>
+            <Motion
+              component="button"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              disabled={loading()}
+              class={authStyles.submitButton}
+            >
+              {loading() ? "Signing in..." : "Sign In"}
+            </Motion>
+          </div>
+        </form>
+        <p class={authStyles.switchText}>
+          Don't have an account?{' '}
+          <button type="button" onClick={props.onSwitchToRegister} class={authStyles.switchButton}>
+            Register
+          </button>
+        </p>
+      </div>
+    </div>
+  );
+}\n\n// Contents of: frontend/acytel_frontend/src/features/auth/ui/ProtectedRoute.tsx
+import { Show, JSX } from 'solid-js';
+import { useNavigate } from '@solidjs/router';
+import authState from '../model/auth.store';
+
+export default function ProtectedRoute(props: { children: JSX.Element }) {
+  const navigate = useNavigate();
+  
+  if (!authState.isAuthenticated) {
+    navigate('/welcome', { replace: true }); // CORRECTED REDIRECT
+    return null;
+  }
+
+  return <Show when={authState.isAuthenticated}>{props.children}</Show>;
+}\n\n// Contents of: frontend/acytel_frontend/src/features/auth/ui/RegisterForm.tsx
+// File: src/features/auth/ui/RegisterForm.tsx
+import { createSignal, Component } from "solid-js";
+import { Motion } from "solid-motion";
+import { register } from "../api/auth.service";
+import authStyles from './Auth.module.css';
+
+interface RegisterFormProps {
+  onSwitchToLogin: () => void;
+}
+
+export const RegisterForm: Component<RegisterFormProps> = (props) => {
+  const [email, setEmail] = createSignal("");
+  const [password, setPassword] = createSignal("");
+  const [emailError, setEmailError] = createSignal<string | null>(null);
+  const [passwordError, setPasswordError] = createSignal<string | null>(null);
+  const [apiError, setApiError] = createSignal<string | null>(null);
+  const [loading, setLoading] = createSignal(false);
+  const [success, setSuccess] = createSignal(false);
+
+  const validateEmail = () => {
+    const emailValue = email();
+    if (!emailValue || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+      setEmailError("Please enter a valid email address.");
+      return false;
+    }
+    setEmailError(null);
+    return true;
+  };
+
+  const validatePassword = () => {
+    const passwordValue = password();
+    if (!passwordValue || passwordValue.length < 8) {
+      setPasswordError("Password must be at least 8 characters long.");
+      return false;
+    }
+    setPasswordError(null);
+    return true;
+  };
+
+  const handleSubmit = async (e: Event) => {
+    e.preventDefault();
+    setApiError(null);
+
+    const isEmailValid = validateEmail();
+    const isPasswordValid = validatePassword();
+    if (!isEmailValid || !isPasswordValid) return;
+
+    setLoading(true);
+    try {
+      await register({ email: email(), password: password() });
+      setSuccess(true);
+      setTimeout(() => {
+        props.onSwitchToLogin();
+      }, 2000);
+    } catch (err: any) {
+      setApiError(err.response?.data?.message || "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div class="flex flex-col items-center justify-center min-h-screen">
+      <div class={`w-full max-w-md ${authStyles.formWrapper}`}>
+        <div class={authStyles.formContent}>
+          <h2 class="text-center text-2xl font-bold text-gray-100 mb-8">Create your Account</h2>
+          <form onSubmit={handleSubmit} class="space-y-4">
+            <div>
+              <label for="reg-email" class="block text-sm font-medium text-gray-400">Email</label>
+              <input id="reg-email" type="email" required value={email()} onInput={(e) => setEmail(e.currentTarget.value)} onBlur={validateEmail}
+                class={`mt-1 appearance-none block w-full px-4 py-3 border rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 sm:text-sm bg-gray-800 text-white transition ${emailError() ? 'border-red-500 focus:ring-red-500' : 'border-gray-700 focus:ring-indigo-500'}`}
+              />
+                <Motion component="div" initial={{ opacity: 0 }} animate={{ opacity: emailError() ? 1 : 0 }} transition={{ duration: 0.3 }}>
+                  {emailError() && <p class="text-xs text-red-400 mt-1">{emailError()}</p>}
+                </Motion>
+            </div>
+            <div>
+              <label for="reg-password" class="block text-sm font-medium text-gray-400">Password</label>
+              <input id="reg-password" type="password" required value={password()} onInput={(e) => setPassword(e.currentTarget.value)} onBlur={validatePassword}
+                class={`mt-1 appearance-none block w-full px-4 py-3 border rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 sm:text-sm bg-gray-800 text-white transition ${passwordError() ? 'border-red-500 focus:ring-red-500' : 'border-gray-700 focus:ring-indigo-500'}`}
+              />
+                <Motion component="div" initial={{ opacity: 0 }} animate={{ opacity: passwordError() ? 1 : 0 }} transition={{ duration: 0.3 }}>
+                 {passwordError() && <p class="text-xs text-red-400 mt-1">{passwordError()}</p>}
+                </Motion>
+            </div>
+            <Motion component="div" initial={{ opacity: 0 }} animate={{ opacity: apiError() || success() ? 1 : 0 }} transition={{ duration: 0.3 }}>
+              {apiError() && <p class="text-sm text-red-400 text-center pt-2">{apiError()}</p>}
+              {success() && <p class="text-sm text-green-400 text-center pt-2">Registration successful! Please log in.</p>}
+            </Motion>
+            <div class="pt-2">
+              <Motion component="button" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} type="submit" disabled={loading() || success()} class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500 disabled:bg-gray-600 disabled:cursor-not-allowed">
+                {loading() ? "Creating Account..." : "Create Account"}
+              </Motion>
+            </div>
+          </form>
+          <p class="mt-8 text-center text-sm text-gray-400">
+            Already have an account?{' '}
+            <button type="button" onClick={props.onSwitchToLogin} class="font-medium text-indigo-400 hover:text-indigo-300 transition">
+              Sign In
+            </button>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};\n\n// Contents of: frontend/acytel_frontend/src/pages/AuthPage.tsx
+// File: src/pages/AuthPage.tsx
+import { createSignal, onMount, onCleanup, Component, Show } from 'solid-js';
+import { Motion } from 'solid-motion';
+import { startParticleAnimation } from "../shared/lib/particles";
+import styles from './WelcomePage.module.css'; // Re-uses the welcome page styles
+import { LoginForm } from '../features/auth/ui/LoginForm';
+import { RegisterForm } from '../features/auth/ui/RegisterForm';
+
+export const AuthPage: Component = () => {
+  let canvasRef: HTMLCanvasElement | undefined;
+  const [view, setView] = createSignal<'login' | 'register'>('login');
+
+  onMount(() => {
+    if (canvasRef) {
+      const cleanup = startParticleAnimation(canvasRef);
+      if (cleanup) {
+        onCleanup(cleanup);
+      }
+    }
+  });
+
+  return (
+    <div class={styles.container}>
+      <canvas ref={canvasRef} class={styles.canvas} />
+      <Motion
+        component="div"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        class="relative z-10 w-full"
+      >
+        <Show when={view() === 'login'} fallback={
+          <RegisterForm onSwitchToLogin={() => setView('login')} />
+        }>
+          <LoginForm onSwitchToRegister={() => setView('register')} />
+        </Show>
+      </Motion>
+    </div>
+  );
+};\n\n// Contents of: frontend/acytel_frontend/package.json
+{
+  "name": "vite-template-solid",
+  "version": "0.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.0",
+    "vite-plugin-solid": "^2.11.6"
+  },
+  "dependencies": {
+    "@solidjs/router": "^0.15.3",
+    "axios": "^1.11.0",
+    "framer-motion": "^12.23.12",
+    "idb": "^8.0.3",
+    "solid-icons": "^1.1.0",
+    "solid-js": "^1.9.5",
+    "solid-motion": "^1.0.0-alpha.1"
+  }
+}

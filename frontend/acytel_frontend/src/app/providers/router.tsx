@@ -4,6 +4,7 @@ import { Route, Router } from '@solidjs/router';
 import ProtectedRoute from '../../features/auth/ui/ProtectedRoute';
 import GuestRoute from '../../features/auth/ui/GuestRoute';
 import MainApplicationPage from '../../pages/MainApplicationPage';
+import { OAuthCallback } from '../../features/auth/ui/OAuthCallback';
 
 // Import the HomePage to be used in the route definition.
 import HomePage from '../../pages/HomePage'; 
@@ -22,6 +23,7 @@ export const AppRouter = () => {
             <Route path="/login" component={props => <GuestRoute>{props.children}</GuestRoute>}>
                 <Route path="" component={AuthPage} />
             </Route>
+            <Route path="/auth/callback" component={OAuthCallback} />
             
             {/* Protected Application Routes */}
             {/* MainApplicationPage now acts as a layout for all nested routes. */}

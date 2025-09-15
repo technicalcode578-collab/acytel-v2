@@ -43,17 +43,17 @@ CREATE TABLE IF NOT EXISTS acytel.playlists (
 
 -- Creates an index on the owner_id for fast lookups of a user's playlists.
 CREATE INDEX IF NOT EXISTS ON acytel.playlists (owner_id);
--- Defines the core table for storing playlist metadata.
-CREATE TABLE IF NOT EXISTS acytel.playlists (
-    id UUID PRIMARY KEY,
-    name TEXT,
-    description TEXT,
-    owner_id UUID,
-    track_ids LIST<UUID>,
-    artwork_id TEXT,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
-);
 
--- Creates an index on the owner_id for fast lookups of a user's playlists.
-CREATE INDEX IF NOT EXISTS ON acytel.playlists (owner_id);
+-- Add OAuth support columns to users table
+-- These columns have been added. If you need to re-run this script,
+-- you can comment out these lines to avoid errors.
+-- ALTER TABLE acytel.users ADD google_id TEXT;
+-- ALTER TABLE acytel.users ADD display_name TEXT;
+-- ALTER TABLE acytel.users ADD profile_picture TEXT;
+-- ALTER TABLE acytel.users ADD auth_provider TEXT;
+
+-- Create index for Google ID lookups
+CREATE INDEX IF NOT EXISTS ON acytel.users (google_id);
+
+-- Update existing users to have 'local' auth provider
+-- Note: This might need to be done programmatically for existing data

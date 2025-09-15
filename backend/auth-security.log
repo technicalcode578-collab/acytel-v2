@@ -1,0 +1,18 @@
+{"timestamp":"2025-09-14T22:15:21.135Z","level":"ERROR","message":"User logged out","userId":"8095518e-4c62-4a35-a296-c83005e08590","ip":"::1"}
+{"timestamp":"2025-09-14T22:15:40.539Z","level":"INFO","message":"Authentication successful","data":{"provider":"google"},"userId":"8095518e-4c62-4a35-a296-c83005e08590","ip":"N/A"}
+{"timestamp":"2025-09-14T22:15:40.542Z","level":"INFO","message":"Authentication successful","data":{"provider":"google"},"userId":"8095518e-4c62-4a35-a296-c83005e08590","ip":"::1"}
+{"timestamp":"2025-09-14T22:21:35.237Z","level":"ERROR","message":"User logged out","userId":"8095518e-4c62-4a35-a296-c83005e08590","ip":"::1"}
+{"timestamp":"2025-09-14T22:22:27.785Z","level":"INFO","message":"Authentication successful","data":{"provider":"google"},"userId":"8095518e-4c62-4a35-a296-c83005e08590","ip":"N/A"}
+{"timestamp":"2025-09-14T22:22:27.787Z","level":"INFO","message":"Authentication successful","data":{"provider":"google"},"userId":"8095518e-4c62-4a35-a296-c83005e08590","ip":"::1"}
+{"timestamp":"2025-09-15T13:32:20.007Z","level":"ERROR","message":"User logged out","userId":"8095518e-4c62-4a35-a296-c83005e08590","ip":"::1"}
+{"timestamp":"2025-09-15T13:33:16.857Z","level":"ERROR","message":"User registered","data":{"userId":"30a9ed6f-6955-4ff8-996a-b9e96f17b357"},"userId":"::1"}
+{"timestamp":"2025-09-15T13:33:44.828Z","level":"INFO","message":"Authentication successful","data":{"provider":"local"},"userId":"30a9ed6f-6955-4ff8-996a-b9e96f17b357","ip":"::1"}
+{"timestamp":"2025-09-15T13:37:33.993Z","level":"ERROR","message":"User logged out","userId":"30a9ed6f-6955-4ff8-996a-b9e96f17b357","ip":"::1"}
+{"timestamp":"2025-09-15T13:38:10.666Z","level":"INFO","message":"Authentication successful","data":{"provider":"local"},"userId":"30a9ed6f-6955-4ff8-996a-b9e96f17b357","ip":"::1"}
+{"timestamp":"2025-09-15T13:38:39.092Z","level":"ERROR","message":"User logged out","userId":"30a9ed6f-6955-4ff8-996a-b9e96f17b357","ip":"::1"}
+{"timestamp":"2025-09-15T13:49:58.033Z","level":"ERROR","message":"User logged out","userId":"30a9ed6f-6955-4ff8-996a-b9e96f17b357","ip":"::1"}
+{"timestamp":"2025-09-15T13:57:38.801Z","level":"INFO","message":"Authentication successful","data":{"provider":"local"},"userId":"c3017196-6237-49f8-b34a-b4122f7e0d15","ip":"::1"}
+{"timestamp":"2025-09-15T18:54:47.194Z","level":"ERROR","message":"New user created via Google OAuth","data":{"userId":"979759c6-f052-4db6-ae36-ea2df2a0752c"},"userId":"N/A"}
+{"timestamp":"2025-09-15T18:54:47.196Z","level":"INFO","message":"Authentication successful","data":{"provider":"google"},"userId":"979759c6-f052-4db6-ae36-ea2df2a0752c","ip":"::1"}
+{"timestamp":"2025-09-15T18:58:24.168Z","level":"INFO","message":"Authentication successful","data":{"provider":"google"},"userId":"979759c6-f052-4db6-ae36-ea2df2a0752c","ip":"N/A"}
+{"timestamp":"2025-09-15T18:58:24.169Z","level":"INFO","message":"Authentication successful","data":{"provider":"google"},"userId":"979759c6-f052-4db6-ae36-ea2df2a0752c","ip":"::1"}

@@ -2,6 +2,8 @@ import 'dotenv/config';
 import express, { Request, Response } from 'express'; // We no longer need 'json' from here
 import cors from 'cors';
 import { json as bodyParserJson } from 'body-parser'; // Import the parser from body-parser
+import session from 'express-session';
+import passport from './config/passport';
 
 import authRouter from './routes/auth.routes';
 import userRouter from './routes/user.routes';
@@ -21,8 +23,22 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParserJson()); // Use the body-parser middleware
 
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'fallback-secret-change-in-production',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 // --- API Routes ---
 app.use('/api/auth', authRouter);
+console.log('Registering user routes');
 app.use('/api/users', userRouter);
 app.use('/api/tracks', trackRouter);
 app.use('/api/playlists', playlistRouter);
