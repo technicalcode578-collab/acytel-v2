@@ -1,38 +1,60 @@
-import { Client } from 'cassandra-driver';
+import { Client, DseClientOptions } from 'cassandra-driver';
+import fs from 'fs';
 
 console.log('Initializing database client module...');
 
-// These names MUST match what you set in the Render Environment tab
-const bundlePath = process.env.ASTRA_SECURE_BUNDLE_PATH;
-const username = process.env.ASTRA_DB_USERNAME;
-const password = process.env.ASTRA_DB_PASSWORD;
-const keyspace = process.env.ASTRA_DB_KEYSPACE;
+const secureConnectBundlePath = process.env.DB_SECURE_CONNECT_BUNDLE_PATH;
+const username = process.env.DB_USERNAME;
+const password = process.env.DB_PASSWORD;
 
-// Check if all required variables are present
-if (!bundlePath || !username || !password || !keyspace) {
-    console.error('CRITICAL ERROR: One or more Astra DB environment variables are missing.');
-    process.exit(1); // Exit if configuration is incomplete
+console.log('DB_SECURE_CONNECT_BUNDLE_PATH:', secureConnectBundlePath);
+
+if (!secureConnectBundlePath) {
+    console.error('Database configuration error: DB_SECURE_CONNECT_BUNDLE_PATH environment variable not set.');
+    process.exit(1);
 }
 
-const client = new Client({
+if (!username || !password) {
+    console.error('Database configuration error: DB_USERNAME or DB_PASSWORD environment variable not set.');
+    process.exit(1);
+}
+
+// Check if the secure connect bundle file exists
+if (fs.existsSync(secureConnectBundlePath)) {
+    console.log('Secure connect bundle found at path:', secureConnectBundlePath);
+} else {
+    console.error('Secure connect bundle not found at path:', secureConnectBundlePath);
+    process.exit(1);
+}
+
+const clientOptions: DseClientOptions = {
     cloud: {
-        secureConnectBundle: bundlePath,
+        secureConnectBundle: secureConnectBundlePath,
     },
     credentials: {
         username: username,
         password: password,
     },
-    keyspace: keyspace,
+};
+
+const client = new Client(clientOptions);
+
+// This event listener is a vital diagnostic tool. It will report
+// connection warnings and errors directly to our console.
+client.on('log', (level, className, message) => {
+    if (level === 'warning' || level === 'error') {
+        console.log(`[DB LOG] ${level}: ${className} | ${message}`);
+    }
 });
 
-console.log('Attempting to connect to the database...');
-
 // Explicitly connect to the database
+console.log('Attempting to connect to the database...');
 client.connect().then(() => {
-    console.log('SUCCESS: Successfully connected to the database.');
+    console.log('Successfully connected to the database.');
 }).catch(err => {
     console.error('FATAL: Database connection failed:', err);
     process.exit(1); // Exit if we can't connect
 });
 
+// We export the single client instance for use across the application.
 export default client;
