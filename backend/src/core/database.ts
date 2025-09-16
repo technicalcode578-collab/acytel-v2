@@ -2,6 +2,12 @@ import { Client, DseClientOptions, types, auth } from 'cassandra-driver';
 
 console.log('Initializing database client module...');
 
+// Log environment variables for debugging
+console.log('DB_CONTACT_POINTS:', process.env.DB_CONTACT_POINTS);
+console.log('DB_LOCAL_DATACENTER:', process.env.DB_LOCAL_DATACENTER);
+console.log('DB_USERNAME:', process.env.DB_USERNAME ? 'found' : 'not found');
+console.log('DB_PASSWORD:', process.env.DB_PASSWORD ? 'found' : 'not found');
+
 // Configuration for our ScyllaDB client
 const contactPoints = process.env.DB_CONTACT_POINTS?.split(',') || ['localhost'];
 const localDataCenter = process.env.DB_LOCAL_DATACENTER || 'datacenter1';
@@ -34,7 +40,7 @@ client.on('log', (level, className, message) => {
 client.connect().then(() => {
     console.log('Successfully connected to the database.');
 }).catch(err => {
-    console.error('Database connection failed:', err);
+    console.error('Database connection failed:', err); 
     process.exit(1); // Exit if we can't connect
 });
 
