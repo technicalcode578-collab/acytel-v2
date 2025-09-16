@@ -20,7 +20,7 @@ export async function register(req: Request, res: Response) {
 
     // 2. Check for Existing User
     // We use a parameterized query to prevent CQL injection.
-    const existingUserQuery = 'SELECT email FROM acytel.users WHERE email = ? ALLOW FILTERING';
+    const existingUserQuery = 'SELECT email FROM users WHERE email = ? ALLOW FILTERING';
     const existingUserResult = await dbClient.execute(existingUserQuery, [email], { prepare: true });
 
     if (existingUserResult.rowLength > 0) {
@@ -39,7 +39,7 @@ export async function register(req: Request, res: Response) {
 
     // 5. Persist to Database
     // Again, we use a parameterized query for security.
-    const insertQuery = 'INSERT INTO acytel.users (id, email, hashed_password, created_at, updated_at) VALUES (?, ?, ?, ?, ?)';
+    const insertQuery = 'INSERT INTO users (id, email, hashed_password, created_at, updated_at) VALUES (?, ?, ?, ?, ?)';
     const params = [userId, email, hashedPassword, now, now];
     await dbClient.execute(insertQuery, params, { prepare: true });
 
@@ -69,7 +69,7 @@ export async function login(req: Request, res: Response) {
     const { email, password } = registerSchema.parse(req.body);
 
     // 2. Find User by Email
-    const findUserQuery = 'SELECT id, email, hashed_password FROM acytel.users WHERE email = ? LIMIT 1 ALLOW FILTERING';
+    const findUserQuery = 'SELECT id, email, hashed_password FROM users WHERE email = ? LIMIT 1 ALLOW FILTERING';
     const userResult = await dbClient.execute(findUserQuery, [email], { prepare: true });
     const user = userResult.first();
 
@@ -173,7 +173,7 @@ export async function refreshUserProfile(req: Request, res: Response) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const userQuery = 'SELECT * FROM acytel.users WHERE id = ? LIMIT 1';
+    const userQuery = 'SELECT * FROM users WHERE id = ? LIMIT 1';
     const result = await dbClient.execute(userQuery, [userId], { prepare: true });
     const user = result.first();
 

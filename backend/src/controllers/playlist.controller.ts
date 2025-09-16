@@ -21,7 +21,7 @@
 
         // --- Helper Function ---
         async function getPlaylistAndVerifyOwnership(playlistId: string, ownerId: string) {
-            const query = 'SELECT * FROM acytel.playlists WHERE id = ? LIMIT 1';
+            const query = 'SELECT * FROM playlists WHERE id = ? LIMIT 1';
             const result = await dbClient.execute(query, [playlistId], { prepare: true });
             const playlist = result.first();
 
@@ -39,7 +39,7 @@
             const ownerId = req.user!.id;
             const newPlaylistId = uuidv4();
 
-            const query = 'INSERT INTO acytel.playlists (id, owner_id, name, description, track_ids, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)';
+            const query = 'INSERT INTO playlists (id, owner_id, name, description, track_ids, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)';
             const params = [newPlaylistId, ownerId, name, description || null, [], new Date(), new Date()];
 
             await dbClient.execute(query, params, { prepare: true });
@@ -66,7 +66,7 @@
                 export async function getUserPlaylists(req: Request, res: Response) {
             try {
                 const ownerId = req.user!.id;
-                const query = 'SELECT * FROM acytel.playlists WHERE owner_id = ?';
+                const query = 'SELECT * FROM playlists WHERE owner_id = ?';
                 const result = await dbClient.execute(query, [ownerId], { prepare: true });
                 res.status(200).json(result.rows);
             } catch (error: any) {
@@ -133,7 +133,7 @@
 
                 const newTrackIds = [...trackIds, types.Uuid.fromString(trackId)];
                 
-                const query = 'UPDATE acytel.playlists SET track_ids = ?, updated_at = ? WHERE id = ?';
+                const query = 'UPDATE playlists SET track_ids = ?, updated_at = ? WHERE id = ?';
                 await dbClient.execute(query, [newTrackIds, new Date(), playlistId], { prepare: true });
 
                 res.status(200).json({ message: 'Track added to playlist.' });
@@ -169,7 +169,7 @@
                     return res.status(404).json({ message: 'Track not found in this playlist.' });
                 }
 
-                const query = 'UPDATE acytel.playlists SET track_ids = ?, updated_at = ? WHERE id = ?';
+                const query = 'UPDATE playlists SET track_ids = ?, updated_at = ? WHERE id = ?';
                 await dbClient.execute(query, [newTrackIds, new Date(), playlistId], { prepare: true });
 
                 res.status(200).json({ message: 'Track removed from playlist.' });

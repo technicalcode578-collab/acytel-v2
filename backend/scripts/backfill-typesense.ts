@@ -9,7 +9,7 @@ const backfill = async () => {
   console.log('Starting backfill...');
   try {
     await initializeTrackCollection();
-    const result = await dbClient.execute('SELECT * FROM acytel.tracks');
+    const result = await dbClient.execute('SELECT * FROM tracks');
     const tracks: Track[] = result.rows.map((row: any) => ({
       id: row.id.toString(),
       title: row.title,
