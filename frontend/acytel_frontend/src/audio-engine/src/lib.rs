@@ -4,8 +4,7 @@ use web_sys::console;
 use std::io::Cursor;
 use symphonia::core::io::MediaSourceStream;
 use symphonia::core::errors::Error;
-use symphonia::core::formats::FormatReader;
-use symphonia::core::codecs::Decoder;
+
 use symphonia::core::audio::SampleBuffer;
 
 #[wasm_bindgen]
