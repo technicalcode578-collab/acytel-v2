@@ -1,17 +1,22 @@
 import { Client } from 'typesense';
 
-if (!process.env.TYPESENSE_API_KEY) {
-  throw new Error('TYPESENSE_API_KEY is not defined');
+const apiKey = process.env.TYPESENSE_API_KEY;
+const host = process.env.TYPESENSE_HOST;
+const port = process.env.TYPESENSE_PORT || '443'; // Default to 443 if not set
+const protocol = process.env.TYPESENSE_PROTOCOL || 'https'; // Default to https if not set
+
+if (!apiKey || !host) {
+  throw new Error('TYPESENSE_API_KEY or TYPESENSE_HOST environment variables are not defined');
 }
 
 export const typesenseClient = new Client({
   nodes: [
     {
-      host: 'localhost',
-      port: 8108,
-      protocol: 'http',
+      host: host,
+      port: parseInt(port, 10), // Convert port from string to number
+      protocol: protocol,
     },
   ],
-  apiKey: process.env.TYPESENSE_API_KEY,
-  connectionTimeoutSeconds: 2,
+  apiKey: apiKey,
+  connectionTimeoutSeconds: 5, // Increased timeout for cloud services
 });
