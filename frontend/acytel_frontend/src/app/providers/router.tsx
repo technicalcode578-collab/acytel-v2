@@ -4,8 +4,7 @@ import { Route, Router } from '@solidjs/router';
 import ProtectedRoute from '../../features/auth/ui/ProtectedRoute';
 import GuestRoute from '../../features/auth/ui/GuestRoute';
 import MainApplicationPage from '../../pages/MainApplicationPage';
-import { OAuthCallback } from '../../features/auth/ui/OAuthCallback';
-
+import OAuthCallbackPage from '../../pages/OAuthCallbackPage';
 // Import the HomePage to be used in the route definition.
 import HomePage from '../../pages/HomePage'; 
 import AddTrackPage from '../../pages/AddTrackPage';
@@ -23,7 +22,7 @@ export const AppRouter = () => {
             <Route path="/login" component={props => <GuestRoute>{props.children}</GuestRoute>}>
                 <Route path="" component={AuthPage} />
             </Route>
-            <Route path="/auth/callback" component={OAuthCallback} />
+            <Route path="/auth/callback" component={OAuthCallbackPage} />
             
             {/* Protected Application Routes */}
             {/* MainApplicationPage now acts as a layout for all nested routes. */}
@@ -33,7 +32,7 @@ export const AppRouter = () => {
                 
                 {/* Placeholder routes for other pages, to be implemented later. */}
                 <Route path="/search" component={() => <div>Search Page</div>} />
-                <Route path="/create" component={AddTrackPage} />
+                <Route path="/AddTrack" component={AddTrackPage} />
                 <Route path="/library" component={() => <div>Library Page</div>} />
                 <Route path="/settings" component={() => <div>Settings Page</div>} />
             </Route>

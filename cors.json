@@ -1,6 +1,8 @@
 [
   {
-    "origin": ["https://acytel-v2.vercel.app"],
+    "origin": [
+      "https://acytel.vercel.app"
+    ],
     "method": ["GET"],
     "maxAgeSeconds": 3600
   }
