@@ -24,3 +24,6 @@ gitignore
 # System Files
 .DS_Store
 Thumbs.db
+
+# WASM build artifacts
+/src/audio-engine/pkg
