@@ -14,7 +14,7 @@ async function getCurrentUser(req, res) {
         if (!userId) {
             return res.status(401).json({ message: 'Authentication error.' });
         }
-        const query = 'SELECT id, email, display_name, profile_picture, auth_provider, created_at, updated_at FROM acytel.users WHERE id = ? LIMIT 1';
+        const query = 'SELECT id, email, display_name, profile_picture, auth_provider, created_at, updated_at FROM users WHERE id = ? LIMIT 1';
         const result = await database_1.default.execute(query, [userId], { prepare: true });
         const user = result.first();
         if (!user) {
@@ -47,7 +47,7 @@ async function updateCurrentUser(req, res) {
         }
         if (email) {
             // Optional: Check if email is already taken by another user
-            const emailExistsQuery = 'SELECT id FROM acytel.users WHERE email = ? ALLOW FILTERING';
+            const emailExistsQuery = 'SELECT id FROM users WHERE email = ? ALLOW FILTERING';
             const existingUser = await database_1.default.execute(emailExistsQuery, [email], { prepare: true });
             if (existingUser.first() && existingUser.first().id.toString() !== userId) {
                 return res.status(409).json({ message: 'Email is already in use.' });
@@ -58,10 +58,10 @@ async function updateCurrentUser(req, res) {
         fieldsToUpdate.push('updated_at = ?');
         values.push(new Date());
         values.push(userId);
-        const query = `UPDATE acytel.users SET ${fieldsToUpdate.join(', ')} WHERE id = ?`;
+        const query = `UPDATE users SET ${fieldsToUpdate.join(', ')} WHERE id = ?`;
         await database_1.default.execute(query, values, { prepare: true });
         // Fetch the updated user to return it
-        const selectQuery = 'SELECT id, email, display_name, profile_picture, auth_provider, created_at, updated_at FROM acytel.users WHERE id = ? LIMIT 1';
+        const selectQuery = 'SELECT id, email, display_name, profile_picture, auth_provider, created_at, updated_at FROM users WHERE id = ? LIMIT 1';
         const result = await database_1.default.execute(selectQuery, [userId], { prepare: true });
         const updatedUser = result.first();
         return res.status(200).json(updatedUser);
@@ -79,7 +79,7 @@ async function deleteCurrentUser(req, res) {
         }
         // Note: Depending on application logic, you might want to handle related data
         // (e.g., tracks, playlists) before deleting the user. This is a direct deletion.
-        const query = 'DELETE FROM acytel.users WHERE id = ?';
+        const query = 'DELETE FROM users WHERE id = ?';
         await database_1.default.execute(query, [userId], { prepare: true });
         // Optional: Could also implement a soft delete by setting a `deleted_at` timestamp
         return res.status(204).send(); // 204 No Content is appropriate for a successful deletion

@@ -16,7 +16,7 @@ passport_1.default.use(new passport_google_oauth20_1.Strategy({
     try {
         const googleProfile = profile;
         // Check if user already exists with Google ID
-        const existingGoogleUserQuery = 'SELECT * FROM acytel.users WHERE google_id = ? LIMIT 1 ALLOW FILTERING';
+        const existingGoogleUserQuery = 'SELECT * FROM users WHERE google_id = ? LIMIT 1 ALLOW FILTERING';
         const existingGoogleUser = await database_1.default.execute(existingGoogleUserQuery, [googleProfile.id], { prepare: true });
         if (existingGoogleUser.rowLength > 0) {
             const user = existingGoogleUser.first();
@@ -30,13 +30,13 @@ passport_1.default.use(new passport_google_oauth20_1.Strategy({
             });
         }
         // Check if user exists with same email but different provider
-        const existingEmailUserQuery = 'SELECT * FROM acytel.users WHERE email = ? LIMIT 1 ALLOW FILTERING';
+        const existingEmailUserQuery = 'SELECT * FROM users WHERE email = ? LIMIT 1 ALLOW FILTERING';
         const existingEmailUser = await database_1.default.execute(existingEmailUserQuery, [googleProfile.emails[0].value], { prepare: true });
         if (existingEmailUser.rowLength > 0) {
             // Link Google account to existing email account
             const user = existingEmailUser.first();
             const updateQuery = `
-        UPDATE acytel.users 
+        UPDATE users 
         SET google_id = ?, display_name = ?, profile_picture = ?, auth_provider = ?, updated_at = ?
         WHERE id = ?
       `;
@@ -65,7 +65,7 @@ passport_1.default.use(new passport_google_oauth20_1.Strategy({
         const profilePicture = googleProfile.photos && googleProfile.photos.length > 0
             ? googleProfile.photos[0].value : null;
         const insertQuery = `
-      INSERT INTO acytel.users 
+      INSERT INTO users 
       (id, email, google_id, display_name, profile_picture, auth_provider, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
@@ -99,7 +99,7 @@ passport_1.default.serializeUser((user, done) => {
 });
 passport_1.default.deserializeUser(async (id, done) => {
     try {
-        const userQuery = 'SELECT * FROM acytel.users WHERE id = ? LIMIT 1';
+        const userQuery = 'SELECT * FROM users WHERE id = ? LIMIT 1';
         const result = await database_1.default.execute(userQuery, [id], { prepare: true });
         const user = result.first();
         if (user) {

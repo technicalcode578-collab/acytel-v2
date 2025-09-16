@@ -88,7 +88,7 @@ async function uploadTrack(req, res) {
             updatedAt: now,
         };
         const insertQuery = `
-        INSERT INTO acytel.tracks (id, title, artist, album, duration_in_seconds, storage_path, artwork_path, uploaded_by, created_at, updated_at)
+        INSERT INTO tracks (id, title, artist, album, duration_in_seconds, storage_path, artwork_path, uploaded_by, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
         const params = [createdTrack.id, createdTrack.title, createdTrack.artist, createdTrack.album, createdTrack.durationInSeconds, createdTrack.storagePath, createdTrack.artworkPath, createdTrack.uploadedBy, createdTrack.createdAt, createdTrack.updatedAt];
@@ -113,7 +113,7 @@ async function listTracks(req, res) {
         if (!userId) {
             return res.status(401).json({ message: 'Authentication error.' });
         }
-        const query = 'SELECT id, title, artist, album, duration_in_seconds, storage_path FROM acytel.tracks WHERE uploaded_by = ? ALLOW FILTERING';
+        const query = 'SELECT id, title, artist, album, duration_in_seconds, storage_path FROM tracks WHERE uploaded_by = ? ALLOW FILTERING';
         const result = await database_1.default.execute(query, [userId], { prepare: true });
         const tracks = result.rows.map(row => ({
             id: row.id,
@@ -133,7 +133,7 @@ async function listTracks(req, res) {
 async function streamTrack(req, res) {
     try {
         const { trackId } = req.params;
-        const query = 'SELECT storage_path FROM acytel.tracks WHERE id = ? LIMIT 1';
+        const query = 'SELECT storage_path FROM tracks WHERE id = ? LIMIT 1';
         const result = await database_1.default.execute(query, [trackId], { prepare: true });
         const track = result.first();
         if (!track) {
@@ -194,7 +194,7 @@ async function generateSecureStreamLink(req, res) {
             return res.status(401).json({ message: 'Authentication error.' });
         }
         // Fetch the track from the database to get its storage_path
-        const query = 'SELECT storage_path FROM acytel.tracks WHERE id = ? LIMIT 1';
+        const query = 'SELECT storage_path FROM tracks WHERE id = ? LIMIT 1';
         const result = await database_1.default.execute(query, [trackId], { prepare: true });
         const track = result.first();
         if (!track || !track.storage_path) {

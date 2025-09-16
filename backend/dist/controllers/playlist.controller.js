@@ -27,7 +27,7 @@ const addTrackSchema = zod_1.z.object({
 });
 // --- Helper Function ---
 async function getPlaylistAndVerifyOwnership(playlistId, ownerId) {
-    const query = 'SELECT * FROM acytel.playlists WHERE id = ? LIMIT 1';
+    const query = 'SELECT * FROM playlists WHERE id = ? LIMIT 1';
     const result = await database_1.default.execute(query, [playlistId], { prepare: true });
     const playlist = result.first();
     if (!playlist)
@@ -42,7 +42,7 @@ async function createPlaylist(req, res) {
         const { name, description } = createPlaylistSchema.parse(req.body);
         const ownerId = req.user.id;
         const newPlaylistId = (0, uuid_1.v4)();
-        const query = 'INSERT INTO acytel.playlists (id, owner_id, name, description, track_ids, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        const query = 'INSERT INTO playlists (id, owner_id, name, description, track_ids, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)';
         const params = [newPlaylistId, ownerId, name, description || null, [], new Date(), new Date()];
         await database_1.default.execute(query, params, { prepare: true });
         const createdPlaylist = {
@@ -67,7 +67,7 @@ async function createPlaylist(req, res) {
 async function getUserPlaylists(req, res) {
     try {
         const ownerId = req.user.id;
-        const query = 'SELECT * FROM acytel.playlists WHERE owner_id = ?';
+        const query = 'SELECT * FROM playlists WHERE owner_id = ?';
         const result = await database_1.default.execute(query, [ownerId], { prepare: true });
         res.status(200).json(result.rows);
     }
@@ -127,7 +127,7 @@ async function addTrackToPlaylist(req, res) {
             return res.status(409).json({ message: 'Track already exists in this playlist.' });
         }
         const newTrackIds = [...trackIds, cassandra_driver_1.types.Uuid.fromString(trackId)];
-        const query = 'UPDATE acytel.playlists SET track_ids = ?, updated_at = ? WHERE id = ?';
+        const query = 'UPDATE playlists SET track_ids = ?, updated_at = ? WHERE id = ?';
         await database_1.default.execute(query, [newTrackIds, new Date(), playlistId], { prepare: true });
         res.status(200).json({ message: 'Track added to playlist.' });
     }
@@ -158,7 +158,7 @@ async function removeTrackFromPlaylist(req, res) {
         if (newTrackIds.length === trackIds.length) {
             return res.status(404).json({ message: 'Track not found in this playlist.' });
         }
-        const query = 'UPDATE acytel.playlists SET track_ids = ?, updated_at = ? WHERE id = ?';
+        const query = 'UPDATE playlists SET track_ids = ?, updated_at = ? WHERE id = ?';
         await database_1.default.execute(query, [newTrackIds, new Date(), playlistId], { prepare: true });
         res.status(200).json({ message: 'Track removed from playlist.' });
     }
