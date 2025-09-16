@@ -1,68 +1,41 @@
 import { Client } from 'cassandra-driver';
-import * as fs from 'fs';
-import * as path from 'path';
 
 console.log('Initializing database client module...');
 
 // These names MUST match what you set in the Render Environment tab
-const bundlePath = process.env.ASTRA_SECURE_BUNDLE_PATH;
+const bundleBase64 = process.env.ASTRA_SECURE_BUNDLE_BASE64;
 const username = process.env.ASTRA_DB_USERNAME;
 const password = process.env.ASTRA_DB_PASSWORD;
 const keyspace = process.env.ASTRA_DB_KEYSPACE;
 
-// Check if all required variables are present
-if (!bundlePath || !username || !password || !keyspace) {
-    console.error('CRITICAL ERROR: One or more Astra DB environment variables are missing.');
+if (!bundleBase64 || !username || !password || !keyspace) {
+    console.error('CRITICAL ERROR: One or more Astra DB environment variables are missing for Base64 method.');
     process.exit(1);
 }
 
-// Verify the bundle file exists and is readable
-try {
-    const resolvedPath = path.resolve(bundlePath);
-    console.log('Checking bundle file at:', resolvedPath);
-    
-    if (!fs.existsSync(resolvedPath)) {
-        console.error('CRITICAL ERROR: Secure connect bundle file does not exist at:', resolvedPath);
-        process.exit(1);
-    }
-    
-    const stats = fs.statSync(resolvedPath);
-    console.log('Bundle file size:', stats.size, 'bytes');
-    
-    if (stats.size === 0) {
-        console.error('CRITICAL ERROR: Secure connect bundle file is empty');
-        process.exit(1);
-    }
-    
-} catch (error) {
-    console.error('CRITICAL ERROR: Cannot read secure connect bundle file:', error);
-    process.exit(1);
-}
+console.log('Decoding Base64 bundle and attempting to connect...');
+
+// Decode the Base64 string from the environment variable back into a binary buffer
+const bundleBuffer = Buffer.from(bundleBase64, 'base64');
 
 const client = new Client({
     cloud: {
-        secureConnectBundle: bundlePath,
+        // Provide the decoded buffer directly, bypassing the file system
+        secureConnectBundle: bundleBuffer as any,
     },
     credentials: {
         username: username,
         password: password,
     },
-    keyspace: keyspace
+    keyspace: keyspace,
 });
 
-console.log('Attempting to connect to the database...');
-
-// Explicitly connect to the database
 client.connect()
     .then(() => {
-        console.log('SUCCESS: Successfully connected to Astra DB');
+        console.log('SUCCESS: Successfully connected to Astra DB using Base64 bundle!');
     })
     .catch(err => {
-        console.error('FATAL: Database connection failed');
-        console.error('Error message:', err.message);
-        if (err.message.includes('ADM-ZIP')) {
-            console.error('TROUBLESHOOTING: The bundle file appears valid but could not be parsed. Please re-download a fresh copy from Astra and update the Secret File on Render.');
-        }
+        console.error('FATAL: Database connection failed:', err);
         process.exit(1);
     });
 
