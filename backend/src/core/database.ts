@@ -1,48 +1,38 @@
-import { Client, DseClientOptions, types, auth } from 'cassandra-driver';
+import { Client } from 'cassandra-driver';
 
 console.log('Initializing database client module...');
 
-// Log environment variables for debugging
-console.log('DB_CONTACT_POINTS:', process.env.DB_CONTACT_POINTS);
-console.log('DB_LOCAL_DATACENTER:', process.env.DB_LOCAL_DATACENTER);
-console.log('DB_USERNAME:', process.env.DB_USERNAME ? 'found' : 'not found');
-console.log('DB_PASSWORD:', process.env.DB_PASSWORD ? 'found' : 'not found');
+// These names MUST match what you set in the Render Environment tab
+const bundlePath = process.env.ASTRA_SECURE_BUNDLE_PATH;
+const username = process.env.ASTRA_DB_USERNAME;
+const password = process.env.ASTRA_DB_PASSWORD;
+const keyspace = process.env.ASTRA_DB_KEYSPACE;
 
-// Configuration for our ScyllaDB client
-const contactPoints = process.env.DB_CONTACT_POINTS?.split(',') || ['localhost'];
-const localDataCenter = process.env.DB_LOCAL_DATACENTER || 'datacenter1';
-const username = process.env.DB_USERNAME;
-const password = process.env.DB_PASSWORD;
+// Check if all required variables are present
+if (!bundlePath || !username || !password || !keyspace) {
+    console.error('CRITICAL ERROR: One or more Astra DB environment variables are missing.');
+    process.exit(1); // Exit if configuration is incomplete
+}
 
-const authProvider = (username && password) 
-  ? new auth.PlainTextAuthProvider(username, password) 
-  : undefined;
-
-const clientOptions: DseClientOptions = {
-    contactPoints: contactPoints,
-    localDataCenter: localDataCenter,
-    protocolOptions: { port: 9042 },
-    queryOptions: { consistency: types.consistencies.localQuorum },
-    authProvider: authProvider
-};
-
-const client = new Client(clientOptions);
-
-// This event listener is a vital diagnostic tool. It will report
-// connection warnings and errors directly to our console.
-client.on('log', (level, className, message) => {
-    if (level === 'warning' || level === 'error') {
-        console.log(`[DB LOG] ${level}: ${className} | ${message}`);
-    }
+const client = new Client({
+    cloud: {
+        secureConnectBundle: bundlePath,
+    },
+    credentials: {
+        username: username,
+        password: password,
+    },
+    keyspace: keyspace,
 });
+
+console.log('Attempting to connect to the database...');
 
 // Explicitly connect to the database
 client.connect().then(() => {
-    console.log('Successfully connected to the database.');
+    console.log('SUCCESS: Successfully connected to the database.');
 }).catch(err => {
-    console.error('Database connection failed:', err); 
+    console.error('FATAL: Database connection failed:', err);
     process.exit(1); // Exit if we can't connect
 });
 
-// We export the single client instance for use across the application.
 export default client;
