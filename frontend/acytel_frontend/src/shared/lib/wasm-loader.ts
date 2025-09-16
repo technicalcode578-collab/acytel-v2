@@ -11,13 +11,13 @@ export const initializeWasm = (): Promise<void> => {
       // Instead we rely on the star-import 'wasm' which is now populated.
       wasmModule = wasm;
       console.log("[WASM Loader] WebAssembly module initialized successfully.");
-    }).catch(error => {
+    }).catch((error: any) => {
       console.error("[WASM Loader] Failed to initialize WASM module.", error);
       initPromise = null; 
       throw error;
     });
   }
-  return initPromise;
+  return initPromise!;
 };
 
 export const getWasmModule = (): typeof wasm => {
