@@ -1,16 +1,23 @@
-import { Client, DseClientOptions, types } from 'cassandra-driver';
+import { Client, DseClientOptions, types, auth } from 'cassandra-driver';
 
 console.log('Initializing database client module...');
 
 // Configuration for our ScyllaDB client
+const contactPoints = process.env.DB_CONTACT_POINTS?.split(',') || ['localhost'];
+const localDataCenter = process.env.DB_LOCAL_DATACENTER || 'datacenter1';
+const username = process.env.DB_USERNAME;
+const password = process.env.DB_PASSWORD;
+
+const authProvider = (username && password) 
+  ? new auth.PlainTextAuthProvider(username, password) 
+  : undefined;
+
 const clientOptions: DseClientOptions = {
-    // This must match the service name in our docker-compose.yml
-    contactPoints: ['localhost'],
-    // This is the default data center for the ScyllaDB docker image
-    localDataCenter: 'datacenter1',
-    // It's good practice to be explicit about the port
+    contactPoints: contactPoints,
+    localDataCenter: localDataCenter,
     protocolOptions: { port: 9042 },
-    queryOptions: { consistency: types.consistencies.localQuorum }
+    queryOptions: { consistency: types.consistencies.localQuorum },
+    authProvider: authProvider
 };
 
 const client = new Client(clientOptions);
