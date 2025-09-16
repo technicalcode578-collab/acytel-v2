@@ -6,7 +6,7 @@
   "scripts": {
     "start": "vite",
     "dev": "vite",
-    "build": "cd src/audio-engine && wasm-pack build --target web && cd ../.. && vite build",
+    "build": "./build.sh",
     "serve": "vite preview"
   },
   "license": "MIT",
