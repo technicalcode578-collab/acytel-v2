@@ -1,4 +1,6 @@
 import { Client } from 'cassandra-driver';
+import * as fs from 'fs';
+import * as path from 'path';
 
 console.log('Initializing database client module...');
 
@@ -13,15 +15,24 @@ if (!bundleBase64 || !username || !password || !keyspace) {
     process.exit(1);
 }
 
-console.log('Decoding Base64 bundle and attempting to connect...');
+console.log('Decoding Base64 bundle and creating temporary file...');
 
-// Decode the Base64 string from the environment variable back into a binary buffer
+// Decode the Base64 string and write it to a temporary file
 const bundleBuffer = Buffer.from(bundleBase64, 'base64');
+const tempBundlePath = path.join(__dirname, 'secure-connect-bundle.zip');
+
+try {
+    fs.writeFileSync(tempBundlePath, bundleBuffer);
+    console.log('Temporary bundle file created successfully');
+} catch (error) {
+    console.error('Failed to create temporary bundle file:', error);
+    process.exit(1);
+}
 
 const client = new Client({
     cloud: {
-        // Provide the decoded buffer directly, bypassing the file system
-        secureConnectBundle: bundleBuffer as any,
+        // Pass the file path as a string, not a buffer
+        secureConnectBundle: tempBundlePath,
     },
     credentials: {
         username: username,
@@ -38,5 +49,20 @@ client.connect()
         console.error('FATAL: Database connection failed:', err);
         process.exit(1);
     });
+
+// Clean up the temporary file on process exit
+process.on('exit', () => {
+    try {
+        if (fs.existsSync(tempBundlePath)) {
+            fs.unlinkSync(tempBundlePath);
+            console.log('Temporary bundle file cleaned up');
+        }
+    } catch (error) {
+        console.warn('Failed to clean up temporary file:', error);
+    }
+});
+
+process.on('SIGINT', () => process.exit(0));
+process.on('SIGTERM', () => process.exit(0));
 
 export default client;
