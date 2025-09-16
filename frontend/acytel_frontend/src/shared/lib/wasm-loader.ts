@@ -1,4 +1,4 @@
-import init, * as wasm from "../../audio-engine/pkg/audio_engine.js";
+import init, * as wasm from "@/audio-engine/pkg/audio_engine.js";
 
 let wasmModule: typeof wasm | null = null;
 let initPromise: Promise<void> | null = null;
