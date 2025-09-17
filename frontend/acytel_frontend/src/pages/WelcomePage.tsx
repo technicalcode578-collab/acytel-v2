@@ -39,7 +39,7 @@ export const WelcomePage: Component = () => {
           </button>
         </div>
         <footer class={`${styles.footer} ${styles.fadeInDelay3}`}>
-          Made by Harsh Rawal - © 2025 Acytel
+          Made by Harsh Rawat - © 2025 Acytel
         </footer>
       </div>
     </div>

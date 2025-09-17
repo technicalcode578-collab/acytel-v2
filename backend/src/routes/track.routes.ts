@@ -1,28 +1,34 @@
 import { Router } from 'express';
 import multer from 'multer';
 import { authenticateToken, verifyStreamToken } from '../middleware/auth.middleware';
-import { uploadTrack, listTracks, streamTrack, generateSecureStreamLink, searchTracks } from '../controllers/track.controller';
+import {
+  uploadTrack,
+  listMyTracks,
+  streamTrack,
+  generateSecureStreamLink,
+  searchPublicTracks,
+  getPublicTracks,
+  deleteTrack
+} from '../controllers/track.controller';
 
 const router = Router();
 
-// Configure multer with a 50MB file size limit
 const upload = multer({ 
   storage: multer.memoryStorage(),
   limits: { fileSize: 50 * 1024 * 1024 } // 50 MB
 });
 
-// GET /api/tracks - Get all tracks for the authenticated user
-router.get('/', authenticateToken, listTracks);
+// Public routes (no authentication required)
+router.get('/public', getPublicTracks);
+router.get('/public/search', searchPublicTracks);
 
-// GET /api/tracks/search - Search for tracks for the authenticated user
-router.get('/search', authenticateToken, searchTracks);
-
-// GET /api/tracks/:trackId/secure-link - Generate a temporary streaming URL
-router.get('/:trackId/secure-link', authenticateToken, generateSecureStreamLink);
-
-// GET /api/tracks/:trackId/stream - The actual streaming endpoint
-router.get('/:trackId/stream', verifyStreamToken, streamTrack);
-// POST /api/tracks/upload - Upload a new track
+// Authenticated routes
+router.get('/me', authenticateToken, listMyTracks);
 router.post('/upload', authenticateToken, upload.single('audioFile'), uploadTrack);
+router.delete('/:trackId', authenticateToken, deleteTrack);
+
+// Streaming routes
+router.get('/:trackId/secure-link', authenticateToken, generateSecureStreamLink);
+router.get('/:trackId/stream', verifyStreamToken, streamTrack);
 
 export default router;
