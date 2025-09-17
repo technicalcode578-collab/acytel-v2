@@ -6,7 +6,7 @@ import { libraryStore } from '../../entities/track/model/track.store';
 import { Track } from '../../entities/track/model/track.model';
 import { Playlist } from '../../shared/lib/playlist.model';
 import { getPlaylists } from '../../features/playlist/api/playlist.service';
-import { getMyTracks } from '../../entities/track/api/track.api';
+import { getPublicTracks } from '../../entities/track/api/track.api';
 import { initializeWasm } from '../../shared/lib/wasm-loader';
 
 // --- Enhanced Track Item Component ---
@@ -154,7 +154,7 @@ export const PlaylistSidebar: Component = () => {
       
       // Load both tracks and playlists
       const [tracks, playlists] = await Promise.all([
-        getMyTracks(),
+        getPublicTracks(),
         getPlaylists()
       ]);
       
@@ -178,7 +178,7 @@ export const PlaylistSidebar: Component = () => {
             {/* Your Music Library Section */}
             <Show when={tracksLoaded()}>
               <CollapsibleSection 
-                title="Your Music Library" 
+                title="Public Tracks" 
                 count={libraryStore.tracks.length}
                 defaultOpen={true}
               >
