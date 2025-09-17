@@ -32,7 +32,7 @@ export const AppRouter = () => {
                 
                 {/* Placeholder routes for other pages, to be implemented later. */}
                 <Route path="/search" component={() => <div>Search Page</div>} />
-                <Route path="/AddTrack" component={AddTrackPage} />
+                <Route path="/create" component={AddTrackPage} />
                 <Route path="/library" component={() => <div>Library Page</div>} />
                 <Route path="/settings" component={() => <div>Settings Page</div>} />
             </Route>
