@@ -18,7 +18,7 @@ export const WelcomePage: Component = () => {
       }
     }
     setTimeout(() => setShowContent(true), 500);
-    setTimeout(() => setShowArrow(true), 2500);
+    setTimeout(() => setShowArrow(true), 1600);
   });
 
   return (

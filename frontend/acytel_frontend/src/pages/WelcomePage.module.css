@@ -104,3 +104,15 @@
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.3);
 }
+
+@media (max-width: 768px) {
+  .tagline {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tagline {
+    font-size: 2rem;
+  }
+}
